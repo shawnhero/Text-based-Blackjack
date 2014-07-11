@@ -57,7 +57,7 @@ int main(){
 		}
 	}
 	if(player.IsBusted()){
-		cout<<"You got busted!"<<enl;
+		cout<<"You got busted!"<<endl;
 	}
 	else{
 		// the deal begin to hit card
