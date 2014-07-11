@@ -55,7 +55,7 @@ public:
 	bool IsSumSoft();
 	virtual void PrintCards(bool firstround);
 	
-	virtual ACTION WhatToDo(){return kHit};
+	virtual ACTION WhatToDo(){return kHit;};
 };
 
 class Dealer: public Player{
