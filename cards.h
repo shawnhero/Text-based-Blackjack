@@ -19,8 +19,8 @@ public:
 	Card SendCard();
 	void PrintAllFreshCards();
 private:
-	vector<Card > m_fresh_cards;
-	vector<Card > m_used_cards;
+	vector<Card > fresh_cards_;
+	vector<Card > used_cards_;
 	struct Gen {
 		mt19937 g;
 		Gen(): g(static_cast<uint32_t>(time(0))){}
@@ -33,30 +33,38 @@ private:
 };
 
 
-enum Action { Hit=0, Stand, Double, Split};
+enum ACTION { kHit=0, kStand, kDouble, kSplit};
 class Player{
 protected:
 	// here 1 stands for Ace. It could either be 1 or 11
-	vector<Card > m_player_cards;
+	vector<Card > player_cards_;
+	struct Status{
+		bool is_busted;
+		bool is_sum_soft;
+		int max_valid_sum;
+		bool is_blackjack;
+	}status_;
 public:
+	
 	void HitCard(Card newcard);
-	bool isBusted();
-	// Sum may only be a valid call when it's not busted
-	int Sum(bool & soft);
+	void UpdateStatus();
+
+	bool IsBlackJack();
+	bool IsBusted();
+	int MaxValidSum();
+	bool IsSumSoft();
 	virtual void PrintCards(bool firstround);
 	
-	virtual Action WhatToDo()=0;
+	virtual ACTION WhatToDo(){return kHit};
 };
 
 class Dealer: public Player{
 public:
-	Action WhatToDo();
+	ACTION WhatToDo();
 	void PrintCards(bool firstround);
-
-
 };
 
 class SuperGambler: public Player{
 public:
-	Action WhatToDo();
+	ACTION WhatToDo();
 };

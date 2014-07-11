@@ -48,13 +48,13 @@ void Card::DisplayCard(){
 Cards::Cards(){
 	for(int i=0; i<52; i++){
 		Card newcard(i/4+1, i%4);
-		m_fresh_cards.push_back(newcard);
+		fresh_cards_.push_back(newcard);
 	}
-	m_used_cards.clear();
+	used_cards_.clear();
 }
 
 void Cards::PrintAllFreshCards(){
-	for(auto i:m_fresh_cards){
+	for(auto i:fresh_cards_){
 		i.DisplayCard();
 	}
 }
@@ -62,82 +62,95 @@ void Cards::PrintAllFreshCards(){
 
 void Cards::Shuffle(){
 	// first merge two parts into one, and clear the used cards
-	m_fresh_cards.insert(m_fresh_cards.end(), m_used_cards.begin(), m_used_cards.end());
-	m_used_cards.clear();
+	fresh_cards_.insert(fresh_cards_.end(), used_cards_.begin(), used_cards_.end());
+	used_cards_.clear();
 	// then do the shuffle
 	// if Gen() is not set, everytime the result will be the same
-	random_shuffle(m_fresh_cards.begin(), m_fresh_cards.end(), Gen());
+	random_shuffle(fresh_cards_.begin(), fresh_cards_.end(), Gen());
 }
 
 Card Cards::SendCard(){
 	// if the number of cards available is less than 15, do a shuffle
-	if(m_fresh_cards.size()<=15){
+	if(fresh_cards_.size()<=15){
 		cout<<"-------------------------"<<endl;
 		cout<<"A shuffle is triggered..."<<endl;
 		cout<<"-------------------------"<<endl;
 		Shuffle();
 	}
-	m_used_cards.push_back(m_fresh_cards.back());
-	m_fresh_cards.pop_back();
-	return m_used_cards.back();
+	used_cards_.push_back(fresh_cards_.back());
+	fresh_cards_.pop_back();
+	return used_cards_.back();
 }
 
 void Player::HitCard(Card newcard){
-	m_player_cards.push_back(newcard);
+	player_cards_.push_back(newcard);
+	UpdateStatus();
 }
 
-bool Player::isBusted(){
-	// to deal with Ace
-	// always use Ace as 1 to determine whether it's busted
+void Player::UpdateStatus(){
+	// first determin whether it's busted
 	int sum=0;
-	for(auto i:m_player_cards){
-		int value=i.num;
-		value=(value>10)?10:value;
-		sum += value;
-	}
-	return sum>21;
-}
-
-int Player::Sum(bool & soft){
-	// to deal with Ace
-	// first try to use it as 11, 
-	// if it's busted, then use it as 1.
-	int sum=0;
-	int acenum = 0;
-	for(auto i:m_player_cards){
-		int value=i.num;
+	int ace_num = 0;
+	for(auto i:player_cards_){
+		int card_point=i.num;
 		// J,Q,K are treated as 10
-		value=(value>10)?10:value;
-		if(value==1){
-			acenum++;
+		card_point=(card_point>10)?10:card_point;
+		// get the number of aces
+		if(card_point==1){
+			ace_num++;
 		}
-		sum += value;
+		// always use Ace as 1 to determine whether it's busted
+		sum += card_point;
 	}
-	// acenum of 1,2,3,4 are all soft
-	soft = (acenum!=0);
-	// try to add 10 until almost bust
-	while(acenum>0){
-		sum += 10;
-		if(sum>21){
-			sum -= 10;
-			break;
+	if(sum>21){
+		status_.is_busted = true;
+		status_.is_sum_soft = false;
+		status_.max_valid_sum = 0;
+		status_.is_blackjack = false;
+	}
+	else{
+		// if not busted, determine the sum and soft status
+		status_.is_busted = false;
+		// acenum of 1,2,3,4 are all soft
+		status_.is_sum_soft = (acenum!=0);
+		// try to add 10 until almost bust
+		while(ace_num>0){
+			sum += 10;
+			if(sum>21){
+				sum -= 10;
+				break;
+			}
 		}
+		status_.max_valid_sum = sum;
+		status_.is_blackjack = (sum==21);
 	}
-	return sum;
 }
 
-Action Dealer::WhatToDo(){
-	// to deal with soft 17
-	// choose to hit
-	bool soft;
-	int sum = Sum(soft);
-	if(sum>=17  && !soft) return Hit;
-	else	return Stand;
+bool Player::IsBlackJack(){
+	return status_.is_blackjack;
 
+}
+
+bool Player::IsBusted(){
+	return status_.is_busted;
+}
+
+void Player::MaxValidSum(){
+	return status_.max_valid_sum;
+}
+
+ACTION Dealer::WhatToDo(){
+	// to deal with soft 17: choose to hit
+	if(status_.max_valid_sum>17 && !status_.is_sum_soft){
+		return kStand;
+	}
+	else{
+		return kHit;
+	}
 }
 
 void Player::PrintCards(bool firstround){
-	for(auto i:m_player_cards){
+	for(auto i:player_cards_){
 		i.DisplayCard();
 	}
 	cout<<endl;
@@ -145,19 +158,19 @@ void Player::PrintCards(bool firstround){
 
 void Dealer::PrintCards(bool firstround){
 	if(!firstround){
-		for(auto i:m_player_cards){
+		for(auto i:player_cards_){
 			i.DisplayCard();
 		}
 		cout<<endl;
 	}
 	else{
 		// for the first round, the second one must be hidden
-		assert(m_player_cards.size()==2);
-		m_player_cards[0].DisplayCard();
+		assert(player_cards_.size()==2);
+		player_cards_[0].DisplayCard();
 		cout<<"second card unknown..."<<endl;
 	}
 }
 
-Action SuperGambler::WhatToDo(){
-	return Hit;
+ACTION SuperGambler::WhatToDo(){
+	return kHit;
 }
