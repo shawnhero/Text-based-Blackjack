@@ -10,17 +10,18 @@ protected:
 	struct Status{
 		bool is_busted;
 		bool is_sum_soft;
-		int max_valid_sum;
+		int max_sum;
 		bool is_blackjack;
 	}status_;
 public:
-	
+	void ClearCards();
 	void HitCard(Card newcard);
 	void UpdateStatus();
 	bool IsBlackJack();
 	bool IsBusted();
-	int MaxValidSum();
+	int MaxSum();
 	bool IsSumSoft();
+
 
 	int GetMoney();
 	void SetMoney(int m);

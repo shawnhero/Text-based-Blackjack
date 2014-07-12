@@ -18,9 +18,19 @@ void Game::Configure(){
 	if(!file.good()){
 		// write to file
 		int initial_money;
-		cout << "Enter inital money: ";
-		cin >> initial_money;
-
+		string input;
+		while(true){
+			cout << "Enter inital money: ";
+			getline(cin, input);
+			stringstream ss(input);
+			if (!(ss>>initial_money)){
+				cout<<"I didn't get that. Please enter an integer"<<endl;
+			}
+			else break;
+		}
+		player_.SetMoney(initial_money);
+		dealer_.SetMoney(initial_money);
+		PrintMoneyStatus();
 	}
 	else{
 		cout << "Loading saved game..."<<endl;
@@ -34,7 +44,40 @@ void Game::Configure(){
 
 }
 
+void Game::SetBet(int bet){
+	bet_ = bet;
+}
+
+bool Game::MoneyOut(){
+	if(player_.GetMoney()<=0){
+		cout<<"You have no money left. Game Over."<<endl;
+		return true;
+	}
+	else if(dealer_.GetMoney()<=0){
+		cout<<"You have won all the money from the dealer! Good Job!"<<endl;
+		return true;
+	}
+	return false;
+}
+
 WHO Game::StartGame(){
+	cout<<endl<<"-------------------------"<<endl;
+	cout<<"Starting a new game.."<<endl;
+	
+	string input;
+	int bet;
+	while(true){
+		cout<<"Enter the bet, ";
+		getline(cin, input);
+		stringstream s(input);
+		if(!(s>>bet)){
+			cout<<"I didn't get that. Please enter an integer"<<endl;
+		}
+		else break;
+	}
+	
+	SetBet(bet);
+	cout <<endl;
 	mycards_.Shuffle();
 	dealer_.HitCard(mycards_.SendCard());
 	dealer_.HitCard(mycards_.SendCard());
@@ -100,10 +143,11 @@ WHO Game::GameLoop(){
 		// when a player busts himself, it will return directly
 		// when a player gets a blackjack, it will return directly
 		// otherwise the dealer's loop will be entered.
-		string input;
-		cout<< "To Hit, press enter. To Stand, input anything and then press enter."<<endl;
-		getline (cin, input);
-		if(input.empty()){
+		char input;
+		cout<< "Do you wanna Hit(h), or Stand(s)?";
+		// getline (cin, input);
+		cin >> input;
+		if(input=='h'){
 			// player choose to hit
 			player_.HitCard(mycards_.SendCard());
 			player_.PrintCards(false);
@@ -118,39 +162,53 @@ WHO Game::GameLoop(){
 				return kDealer;
 			}
 		}
-		else{
+		else if(input=='s'){
 			// player choose to stand
 			player_.PrintCards(false);
 			break;
 		}
+		else{
+			cout<<"I didn't get that."<<endl;
+		}
 	}
-	
+
+	cout<<"-------------------------"<<endl;
 	cout <<endl<<"Now the dealer's turn.."<<endl;
 
 	// Deal's loop
 	while(!dealer_.IsBusted()){
+		dealer_.PrintCards(false);
 		if(dealer_.WhatToDo()==kHit){
 			dealer_.HitCard(mycards_.SendCard());
-			dealer_.PrintCards(false);
+			//dealer_.PrintCards(false);
 			// check whether the dealer got a blackjack
 			if(dealer_.IsBlackJack()){
 				// dealer got blackjack. return player as the winner
 				cout<<"The dealer got a BlackJack!"<<endl;
+				dealer_.PrintCards(false);
 				return kDealer;
 			}
 		}
 		else{
 			// dealer choose to stand
-			dealer_.PrintCards(false);
 			break;
 		}
 	}
+	// reasons for exiting dealer's loop
+	// 1. the dealer busted himself
+	// 2. the dealer choose to stand
 	if(dealer_.IsBusted()){
+		dealer_.PrintCards(false);
 		cout<<"Oops, the deal busted himself!"<<endl;
 		return kPlayer;
 	}
+
+	// the dealer choose to stand
+	// now compare the cards
+	cout <<endl<<"Dealer choose to stand"<<endl;
+	dealer_.PrintCards(false);
 	player_.PrintCards(false);
-	int diff = dealer_.MaxValidSum() - player_.MaxValidSum();
+	int diff = dealer_.MaxSum() - player_.MaxSum();
 	if(diff>0){
 		// the dealer wins
 		return kDealer;
@@ -167,6 +225,8 @@ WHO Game::GameLoop(){
 }
 
 void Game::CloseGame(WHO winner){
+	dealer_.ClearCards();
+	player_.ClearCards();
 	assert(winner!=kNeither);
 	switch(winner){
 		case kDealer:
@@ -194,4 +254,18 @@ void Game::PrintMoneyStatus(){
 	cout<<"Your money, "<<player_.GetMoney()<<endl;
 	cout<<"Dealer's money, "<<dealer_.GetMoney()<<endl;
 	cout<<"-------------------------"<<endl;
+}
+
+bool Game::Exit(){
+	cout << "Go on a new round?(y/n)";
+	char input;
+	getline(cin, input);
+	switch(input){
+		case 'y':
+			
+		case 'n':
+		default:
+
+	}
+
 }

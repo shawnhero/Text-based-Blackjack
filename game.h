@@ -16,6 +16,12 @@ public:
 	// otherwise it's just too easy for the players to cheat
 	void Configure();
 
+	// set the bet for the current round
+	void SetBet(int bet);
+
+	// determine whether someone is running out of money
+	bool MoneyOut();
+
 	// return the person who wins
 	// kBoth stands for a push, while kNeither means the game should continue 
 	WHO StartGame();
@@ -30,5 +36,7 @@ public:
 	void PrintMoneyStatus();
 
 	// save the current money to file (optional) and exit
-	void SaveGame(bool save);
+	// if exit, return true, else return false
+	void SaveGame();
+	bool PromptExit();
 };

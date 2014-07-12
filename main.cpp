@@ -8,11 +8,15 @@ using namespace std;
 int main(){
 	Game mygame;
 	mygame.Configure();
-	WHO possible_winner = mygame.StartGame();
-	if(possible_winner!=kNeither){
-		mygame.CloseGame(possible_winner);
-		return 0;
+	while(!mygame.MoneyOut()){
+		WHO possible_winner = mygame.StartGame();
+		if(possible_winner!=kNeither){
+			mygame.CloseGame(possible_winner);
+		}
+		else{
+			mygame.CloseGame(mygame.GameLoop());	
+		}
+		
 	}
-	mygame.CloseGame(mygame.GameLoop());
 	return 0;
 }

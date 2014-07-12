@@ -2,6 +2,9 @@
 #include <iostream>
 using namespace std;
 
+void Player::ClearCards(){
+	player_cards_.clear();
+}
 
 void Player::HitCard(Card newcard){
 	player_cards_.push_back(newcard);
@@ -27,7 +30,7 @@ void Player::UpdateStatus(){
 	if(sum>21){
 		status_.is_busted = true;
 		status_.is_sum_soft = false;
-		status_.max_valid_sum = 0;
+		status_.max_sum = sum;
 		status_.is_blackjack = false;
 	}
 	else{
@@ -43,7 +46,7 @@ void Player::UpdateStatus(){
 				break;
 			}
 		}
-		status_.max_valid_sum = sum;
+		status_.max_sum = sum;
 		status_.is_blackjack = (sum==21);
 	}
 }
@@ -57,8 +60,8 @@ bool Player::IsBusted(){
 	return status_.is_busted;
 }
 
-int Player::MaxValidSum(){
-	return status_.max_valid_sum;
+int Player::MaxSum(){
+	return status_.max_sum;
 }
 
 int Player::GetMoney(){
@@ -75,7 +78,7 @@ void Player::CloseMoney(int profit){
 
 ACTION Dealer::WhatToDo(){
 	// to deal with soft 17: choose to hit
-	if(status_.max_valid_sum>17 && !status_.is_sum_soft){
+	if(status_.max_sum>17 && !status_.is_sum_soft){
 		return kStand;
 	}
 	else{
@@ -84,15 +87,18 @@ ACTION Dealer::WhatToDo(){
 }
 
 void Player::PrintCards(bool firstround){
-	cout <<"Your cards are, ";
+	cout <<"Player:\t";
 	for(auto i:player_cards_){
 		i.DisplayCard();
 	}
 	cout<<endl;
+	cout <<"Sum:   \t";
+	cout << MaxSum()<<endl;
+
 }
 
 void Dealer::PrintCards(bool firstround){
-	cout <<"The dealer's cards are, ";
+	cout <<"Dealer:\t";
 	if(!firstround){
 		for(auto i:player_cards_){
 			i.DisplayCard();
@@ -104,6 +110,13 @@ void Dealer::PrintCards(bool firstround){
 		assert(player_cards_.size()==2);
 		player_cards_[0].DisplayCard();
 		cout<<"second card unknown..."<<endl;
+	}
+	cout <<"Sum:   \t";
+	if(!firstround){
+		cout << MaxSum()<<endl;
+	}
+	else{
+		cout <<"?"<<endl;
 	}
 }
 
