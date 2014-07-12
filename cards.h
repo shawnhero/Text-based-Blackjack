@@ -1,6 +1,15 @@
 #include <vector>
 #include <assert.h>
 #include <random>
+
+#if defined(_WIN64) || defined(_WIN32)
+//define something for Windows
+typedef __int32 int32_t;
+typedef unsigned __int32 uint32_t;
+#include <ctime>
+#endif
+
+
 using namespace std;
 struct Card{
 	int num;
@@ -38,6 +47,7 @@ class Player{
 protected:
 	// here 1 stands for Ace. It could either be 1 or 11
 	vector<Card > player_cards_;
+	int money_in_hand;
 	struct Status{
 		bool is_busted;
 		bool is_sum_soft;
@@ -48,11 +58,15 @@ public:
 	
 	void HitCard(Card newcard);
 	void UpdateStatus();
-
 	bool IsBlackJack();
 	bool IsBusted();
 	int MaxValidSum();
 	bool IsSumSoft();
+
+	void GetMoney();
+	void SetMoney();
+	Player(int initial_money):money_in_hand(initial_money){}
+	Player():money_in_hand(100){};
 	virtual void PrintCards(bool firstround);
 	
 	virtual ACTION WhatToDo(){return kHit;};

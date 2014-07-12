@@ -111,8 +111,8 @@ void Player::UpdateStatus(){
 	else{
 		// if not busted, determine the sum and soft status
 		status_.is_busted = false;
-		// acenum of 1,2,3,4 are all soft
-		status_.is_sum_soft = (acenum!=0);
+		// the point is soft if there is an ace treated as 11
+		status_.is_sum_soft = (ace_num!=0) && (sum<=11);
 		// try to add 10 until almost bust
 		while(ace_num>0){
 			sum += 10;
@@ -135,8 +135,16 @@ bool Player::IsBusted(){
 	return status_.is_busted;
 }
 
-void Player::MaxValidSum(){
+int Player::MaxValidSum(){
 	return status_.max_valid_sum;
+}
+
+int Player::GetMoney(){
+	return money_in_hand;
+}
+
+void Player::SetMoney(int m){
+	money_in_hand = m;
 }
 
 ACTION Dealer::WhatToDo(){
@@ -150,6 +158,7 @@ ACTION Dealer::WhatToDo(){
 }
 
 void Player::PrintCards(bool firstround){
+	cout <<"Your cards are, ";
 	for(auto i:player_cards_){
 		i.DisplayCard();
 	}
@@ -157,6 +166,7 @@ void Player::PrintCards(bool firstround){
 }
 
 void Dealer::PrintCards(bool firstround){
+	cout <<"The dealer's cards are, ";
 	if(!firstround){
 		for(auto i:player_cards_){
 			i.DisplayCard();
