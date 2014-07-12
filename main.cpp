@@ -7,8 +7,9 @@ using namespace std;
 
 int main(){
 	Game mygame;
-	mygame.Configure();
+	mygame.LoadGame();
 	while(!mygame.MoneyOut()){
+		if(mygame.PromptExit()) break;
 		WHO possible_winner = mygame.StartGame();
 		if(possible_winner!=kNeither){
 			mygame.CloseGame(possible_winner);
@@ -16,7 +17,6 @@ int main(){
 		else{
 			mygame.CloseGame(mygame.GameLoop());	
 		}
-		
 	}
 	return 0;
 }

@@ -8,7 +8,7 @@ using namespace std;
 //int Game::total_money = 100;
 
 
-void Game::Configure(){
+void Game::LoadGame(){
 	// first try to read from configure file
 	// if not found, then do some initialization
 	// Hmm, maybe I'll add some encryption feature, 
@@ -16,29 +16,34 @@ void Game::Configure(){
 	ifstream file("save.dat");
 
 	if(!file.good()){
-		// write to file
-		int initial_money;
-		string input;
-		while(true){
-			cout << "Enter inital money: ";
-			getline(cin, input);
-			stringstream ss(input);
-			if (!(ss>>initial_money)){
-				cout<<"I didn't get that. Please enter an integer"<<endl;
-			}
-			else break;
-		}
-		player_.SetMoney(initial_money);
-		dealer_.SetMoney(initial_money);
-		PrintMoneyStatus();
+		// file not existed
+		// int initial_money;
+		// string input;
+		// while(true){
+		// 	cout << "Enter inital money: ";
+		// 	getline(cin, input);
+		// 	stringstream ss(input);
+		// 	if (!(ss>>initial_money)){
+		// 		cout<<"I didn't get that. Please enter an integer"<<endl;
+		// 	}
+		// 	else break;
+		// }
+		// player_.SetMoney(initial_money);
+		// dealer_.SetMoney(initial_money);
 	}
 	else{
 		cout << "Loading saved game..."<<endl;
 		int pmoney, dmoney;
 		file >> pmoney >> dmoney;
-		player_.SetMoney(pmoney);
-		dealer_.SetMoney(dmoney);
+		if(pmoney<=0){
+			cout<<"Last time you lost all your money. A new game is started.."<<endl;
+		}
+		else if(pmoney + dmoney == (PLAYER_MONEY+DEALER_MONEY)){
+			player_.SetMoney(pmoney);
+			dealer_.SetMoney(dmoney);
+		}
 	}
+	PrintMoneyStatus();
 	file.close();
 	return;
 
@@ -62,22 +67,7 @@ bool Game::MoneyOut(){
 
 WHO Game::StartGame(){
 	cout<<endl<<"-------------------------"<<endl;
-	cout<<"Starting a new game.."<<endl;
-	
-	string input;
-	int bet;
-	while(true){
-		cout<<"Enter the bet, ";
-		getline(cin, input);
-		stringstream s(input);
-		if(!(s>>bet)){
-			cout<<"I didn't get that. Please enter an integer"<<endl;
-		}
-		else break;
-	}
-	
-	SetBet(bet);
-	cout <<endl;
+	cout<<"Starting a new round.."<<endl;
 	mycards_.Shuffle();
 	dealer_.HitCard(mycards_.SendCard());
 	dealer_.HitCard(mycards_.SendCard());
@@ -256,16 +246,45 @@ void Game::PrintMoneyStatus(){
 	cout<<"-------------------------"<<endl;
 }
 
-bool Game::Exit(){
-	cout << "Go on a new round?(y/n)";
-	char input;
-	getline(cin, input);
-	switch(input){
-		case 'y':
-			
-		case 'n':
-		default:
-
+bool Game::PromptExit(){
+	// prompt exit
+	// also let the player set a new bet if he chooses to contunue
+	string input;
+	int bet;
+	while(true){
+		cout << "Enter your bet(enter x to exit game),";
+		cin>>input;
+		stringstream s(input);
+		if(!(s>>bet)){
+			// the player entered a non-integer
+			if(s.str().compare("x")==0){
+				// player entered x to exit game
+				SaveGame();
+				return true;
+			}
+			cout<<"I didn't get that. Please enter an integer"<<endl;
+		}
+		else{
+			// the player entered a valid integer
+			// still need to check whether it's a valid bet
+			if(bet<=0){
+				cout<<"You must must bet at least 1 chip each hand!"<<endl;
+			}
+			else if(bet>player_.GetMoney()){
+				cout<<"You must bet within your budget!"<<endl;
+			}
+			else break;
+		}
 	}
+	SetBet(bet);
+	cout <<endl;
+	return false;
+}
 
+void Game::SaveGame(){
+	cout <<"Saving game to save.dat"<<endl;
+	ofstream myfile;
+ 	myfile.open ("save.dat");
+ 	myfile << player_.GetMoney()<<" "<<dealer_.GetMoney();
+ 	myfile.close();
 }

@@ -78,7 +78,7 @@ void Player::CloseMoney(int profit){
 
 ACTION Dealer::WhatToDo(){
 	// to deal with soft 17: choose to hit
-	if(status_.max_sum>17 && !status_.is_sum_soft){
+	if(status_.max_sum>=17 && !status_.is_sum_soft){
 		return kStand;
 	}
 	else{
@@ -109,14 +109,14 @@ void Dealer::PrintCards(bool firstround){
 		// for the first round, the second one must be hidden
 		assert(player_cards_.size()==2);
 		player_cards_[0].DisplayCard();
-		cout<<"second card unknown..."<<endl;
+		cout<<"Unknown"<<endl;
 	}
 	cout <<"Sum:   \t";
 	if(!firstround){
 		cout << MaxSum()<<endl;
 	}
 	else{
-		cout <<"?"<<endl;
+		cout <<"Unknown"<<endl;
 	}
 }
 

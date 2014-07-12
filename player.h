@@ -1,5 +1,7 @@
 #include "cards.h"
 #include <vector>
+#define PLAYER_MONEY 100
+#define DEALER_MONEY 10000
 
 enum ACTION { kHit=0, kStand, kDouble, kSplit};
 class Player{
@@ -14,6 +16,7 @@ protected:
 		bool is_blackjack;
 	}status_;
 public:
+	Player():money_in_hand_(PLAYER_MONEY){}
 	void ClearCards();
 	void HitCard(Card newcard);
 	void UpdateStatus();
@@ -26,8 +29,6 @@ public:
 	int GetMoney();
 	void SetMoney(int m);
 	void CloseMoney(int profit);
-	Player(int initial_money):money_in_hand_(initial_money){}
-	Player():money_in_hand_(100){};
 	virtual void PrintCards(bool firstround);
 	
 	virtual ACTION WhatToDo(){return kHit;};
@@ -35,6 +36,7 @@ public:
 
 class Dealer: public Player{
 public:
+	Dealer(){money_in_hand_ = DEALER_MONEY;}
 	ACTION WhatToDo();
 	void PrintCards(bool firstround);
 };
