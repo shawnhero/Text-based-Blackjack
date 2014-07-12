@@ -90,88 +90,108 @@ WHO Game::DetectBlackJack(WHO who_to_detect){
 				default:
 					return kNeither;
 			}
-		default:
-			break;
 	}
 }
 
-void Game::PlayerLoop(){
-	while(true){
-		// steps here:
-		// 1. ask for actions
-		// 2. determine status
-		// 3. continue to ask for actions
+WHO Game::GameLoop(){
+
+	// Player's loop
+	while(true){	
+		// when a player busts himself, it will return directly
+		// when a player gets a blackjack, it will return directly
+		// otherwise the dealer's loop will be entered.
 		string input;
 		cout<< "To Hit, press enter. To Stand, input anything and then press enter."<<endl;
 		getline (cin, input);
 		if(input.empty()){
 			// player choose to hit
 			player_.HitCard(mycards_.SendCard());
-			player.PrintCards(false);
+			player_.PrintCards(false);
+			if(player_.IsBlackJack()){
+				// player got blackjack. return player as the winner
+				cout<<"Wow, you got a BlackJack!"<<endl;
+				return kPlayer;
+			}
+			if(player_.IsBusted()){
+				// player got busted. return dealer as the winner
+				cout<<"Oops, you busted yourself!"<<endl;
+				return kDealer;
+			}
 		}
 		else{
-			player.PrintCards(false);
+			// player choose to stand
+			player_.PrintCards(false);
 			break;
 		}
 	}
-	if(player.IsBusted()){
-		cout<<"You got busted!"<<endl;
-	}
-	else{
-		// the deal begin to hit card
-		while(!dealer.IsBusted()){
-			switch(dealer.WhatToDo()){
-			case kHit:
-				dealer.HitCard(mycards.SendCard());
-				cout<<"-------------------------"<<endl;
-				cout<<"Dealer's Cards are now, "<<endl;
-				dealer.PrintCards(false);
-				cout<<"-------------------------"<<endl;
-				break;
-			case kStand:
-				cout<<"-------------------------"<<endl;
-				cout<<"Dealer's Cards are now, "<<endl;
-				dealer.PrintCards(false);
-				cout<<"-------------------------"<<endl;
-				break;
-			default:
-				break;
-			}
+	
+	cout <<endl<<"Now the dealer's turn.."<<endl;
 
-		}
-		if(dealer.IsBusted()){
-			cout<<"Oops, the deal busted himself! You win!"<<endl;
+	// Deal's loop
+	while(!dealer_.IsBusted()){
+		if(dealer_.WhatToDo()==kHit){
+			dealer_.HitCard(mycards_.SendCard());
+			dealer_.PrintCards(false);
+			// check whether the dealer got a blackjack
+			if(dealer_.IsBlackJack()){
+				// dealer got blackjack. return player as the winner
+				cout<<"The dealer got a BlackJack!"<<endl;
+				return kDealer;
+			}
 		}
 		else{
-			// to this point, neither is busted
-			int diff = dealer.MaxValidSum() - player.MaxValidSum();
-			cout<<"The dealer's cards:\t";
-			dealer.PrintCards(false);
-			cout<<"Your cards:\t";
-			player.PrintCards(false);
-			if(diff>0){
-				// the dealer wins
-				cout << "The dealer wins!"<<endl;
-
-			}
-			else if(diff<0){
-				// the player wins
-				cout << "You win!"<<endl;
-
-			}
-			else{
-				// it's a push
-				cout <<"It's a push!"<< endl;
-
-			}
-			
+			// dealer choose to stand
+			dealer_.PrintCards(false);
+			break;
 		}
-		
 	}
+	if(dealer_.IsBusted()){
+		cout<<"Oops, the deal busted himself!"<<endl;
+		return kPlayer;
+	}
+	player_.PrintCards(false);
+	int diff = dealer_.MaxValidSum() - player_.MaxValidSum();
+	if(diff>0){
+		// the dealer wins
+		return kDealer;
+	}
+	else if(diff<0){
+		// the player wins
+		return kPlayer;
+	}
+	else{
+		// it's a push
+		return kBoth;
 
+	}
 }
+
+void Game::CloseGame(WHO winner){
+	assert(winner!=kNeither);
+	switch(winner){
+		case kDealer:
+			cout << "The dealer wins!"<<endl;
+			dealer_.CloseMoney(bet_);
+			player_.CloseMoney(-bet_);
+			break;
+		case kPlayer:
+			cout << "Congratulations! You win!"<<endl;
+			dealer_.CloseMoney(-bet_);
+			player_.CloseMoney(bet_);
+			break;
+		case kBoth:
+			cout <<"It's a push!"<<endl;
+		default:
+			break;
+	}
+	PrintMoneyStatus();
 }
 
-void Game::CloseGame(){
 
+
+void Game::PrintMoneyStatus(){
+	cout<<"-------------------------"<<endl;
+	cout<<"Your money, "<<player_.GetMoney()<<endl;
+	cout<<"Dealer's money, "<<dealer_.GetMoney()<<endl;
+	cout<<"-------------------------"<<endl;
 }
