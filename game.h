@@ -1,13 +1,22 @@
+// Author: Shawn Wu
+// Email:  wuxu@cs.ucla.edu
+
+// Provide a class to simulate all the processes in a hand of the game
 #include "player.h"
 
-enum GAMEMODE { kPlayerDealer=0, kSuperGambler};
+enum GAMEMODE { kPlayerVSDealer=0, kSuperGamblerVSDealer};
 enum WHO{ kDealer=0, kPlayer, kBoth, kNeither};
 class Game{
 private:
-	int bet_;
-	Cards mycards_;
+	int bet_;	// the money the player bet on this hand
+	Cards mycards_;	// the current deck of cards
 	Player player_;
 	Dealer dealer_;
+
+	struct gamemode_{
+		bool shuffle_every_hand;
+
+	};
 public:
 	Game():bet_(1){}
 	// first try to read from configure file
@@ -26,14 +35,15 @@ public:
 	// kBoth stands for a push, while kNeither means the game should continue 
 	WHO StartGame();
 
-	// given who to detect, return who has a blackjack
-	// who_to_detect is passed into the method purely for efficiency. because in many situations we know who can or cannot have a blackjack.
-	WHO DetectBlackJack(WHO who_to_detect);
+	// The main game loop
+	// Include first the player's loop and then the dealer's loop
 	WHO GameLoop();
 
 	// print the result and change the money
 	void CloseGame(WHO winner);
-	void PrintMoneyStatus();
+
+	// Print how many chips for the player and dealer
+	void PrintChipStatus();
 
 	// save the current money to file (optional) and exit
 	// if exit, return true, else return false

@@ -1,3 +1,8 @@
+// Author: Shawn Wu
+// Email:  wuxu@cs.ucla.edu
+
+// Provide a class to simulate all the processes in a hand of the game
+
 #include "game.h"
 #include <iostream>
 #include <fstream>
@@ -5,46 +10,46 @@
 #include <string>
 using namespace std;
 
-//int Game::total_money = 100;
-
-
 void Game::LoadGame(){
-	// first try to read from configure file
-	// if not found, then do some initialization
+	// first try to read from save.data
 	// Hmm, maybe I'll add some encryption feature, 
 	// otherwise it's just too easy for the players to cheat
-	ifstream file("save.dat");
-
-	if(!file.good()){
-		// file not existed
-		// int initial_money;
-		// string input;
-		// while(true){
-		// 	cout << "Enter inital money: ";
-		// 	getline(cin, input);
-		// 	stringstream ss(input);
-		// 	if (!(ss>>initial_money)){
-		// 		cout<<"I didn't get that. Please enter an integer"<<endl;
-		// 	}
-		// 	else break;
-		// }
-		// player_.SetMoney(initial_money);
-		// dealer_.SetMoney(initial_money);
-	}
-	else{
-		cout << "Loading saved game..."<<endl;
-		int pmoney, dmoney;
-		file >> pmoney >> dmoney;
-		if(pmoney<=0){
-			cout<<"Last time you lost all your money. A new game is started.."<<endl;
+	while(true){
+		cout<<"Load Last Saved Game?(y/n)";
+		string input;
+		cin>>input;
+		if(input.compare("y")==0){
+			// User chooses to load saved game
+			ifstream file("save.dat");
+			if(file.good()){
+				cout << "Loading saved game..."<<endl;
+				int pchips, dchips;
+				file >> pchips >> dchips;
+				if(pchips<=0){
+					cout<<"Last time you lost all your money. A new game is started.."<<endl;
+				}
+				else if(pchips + dchips == (kPlayerChips+kDealerChips)){
+					player_.SetChips(pchips);
+					dealer_.SetChips(dchips);
+				}
+			}
+			else{
+				// file not found. 
+				cout <<"Saved File not found. Using default setting.."<<endl;
+			}
+			file.close();
+			break;
 		}
-		else if(pmoney + dmoney == (PLAYER_MONEY+DEALER_MONEY)){
-			player_.SetMoney(pmoney);
-			dealer_.SetMoney(dmoney);
+		else if(input.compare("n")==0){
+			cout <<"Creating new game profile.."<<endl;
+			break;
+		}
+		else{
+			cout<<"I didn't get that."<<endl;
+			
 		}
 	}
-	PrintMoneyStatus();
-	file.close();
+	PrintChipStatus();
 	return;
 
 }
@@ -54,11 +59,11 @@ void Game::SetBet(int bet){
 }
 
 bool Game::MoneyOut(){
-	if(player_.GetMoney()<=0){
+	if(player_.GetChips()<=0){
 		cout<<"You have no money left. Game Over."<<endl;
 		return true;
 	}
-	else if(dealer_.GetMoney()<=0){
+	else if(dealer_.GetChips()<=0){
 		cout<<"You have won all the money from the dealer! Good Job!"<<endl;
 		return true;
 	}
@@ -68,29 +73,31 @@ bool Game::MoneyOut(){
 WHO Game::StartGame(){
 	cout<<endl<<"-------------------------"<<endl;
 	cout<<"Starting a new round.."<<endl;
-	mycards_.Shuffle();
+	// // shuffle for every hand
+	//mycards_.Shuffle();
 	dealer_.HitCard(mycards_.SendCard());
 	dealer_.HitCard(mycards_.SendCard());
 	player_.HitCard(mycards_.SendCard());
 	player_.HitCard(mycards_.SendCard());
 
-	switch(DetectBlackJack(kBoth)){
-		case kDealer:
+	int bj = dealer_.IsBlackJack() + 2*player_.IsBlackJack();
+	switch(bj){
+		case 1:
 			cout <<"Dealer got a BlackJack!"<<endl;
 			dealer_.PrintCards(false);
 			player_.PrintCards(true);
 			return kDealer;
-		case kPlayer:
+		case 2:
 			cout <<"You got a BlackJack!"<<endl;
 			player_.PrintCards(true);
 			dealer_.PrintCards(false);
 			return kPlayer;
-		case kBoth:
+		case 3:
 			cout <<"Both of you have a BlackJack! It's a push."<<endl;
 			player_.PrintCards(true);
 			dealer_.PrintCards(false);
 			return kBoth;
-		case kNeither:
+		case 0:
 		default:
 			break;
 
@@ -102,42 +109,18 @@ WHO Game::StartGame(){
 	return kNeither;
 }
 
-WHO Game::DetectBlackJack(WHO who_to_detect){
-	switch(who_to_detect){
-		case kNeither:
-			return kNeither;
-		case kDealer:
-			return (dealer_.IsBlackJack())?kDealer:kNeither;
-		case kPlayer:
-			return (player_.IsBlackJack())?kPlayer:kNeither;
-		case kBoth:
-			int bj = dealer_.IsBlackJack() + 2*player_.IsBlackJack();
-			switch(bj){
-				case 3:
-					return kBoth;
-				case 2:
-					return kPlayer;
-				case 1:
-					return kDealer;
-				case 0:
-				default:
-					return kNeither;
-			}
-	}
-}
-
 WHO Game::GameLoop(){
 
 	// Player's loop
 	while(true){	
-		// when a player busts himself, it will return directly
-		// when a player gets a blackjack, it will return directly
+		// when a player busts himself, it will return kDealer directly
+		// when a player gets a blackjack, it will return kPlayer directly
 		// otherwise the dealer's loop will be entered.
-		char input;
+		string input;
 		cout<< "Do you wanna Hit(h), or Stand(s)?";
 		// getline (cin, input);
 		cin >> input;
-		if(input=='h'){
+		if(input.compare("h")==0){
 			// player choose to hit
 			player_.HitCard(mycards_.SendCard());
 			player_.PrintCards(false);
@@ -152,7 +135,7 @@ WHO Game::GameLoop(){
 				return kDealer;
 			}
 		}
-		else if(input=='s'){
+		else if(input.compare("s")==0){
 			// player choose to stand
 			player_.PrintCards(false);
 			break;
@@ -234,15 +217,15 @@ void Game::CloseGame(WHO winner){
 		default:
 			break;
 	}
-	PrintMoneyStatus();
+	PrintChipStatus();
 }
 
 
 
-void Game::PrintMoneyStatus(){
+void Game::PrintChipStatus(){
 	cout<<"-------------------------"<<endl;
-	cout<<"Your money, "<<player_.GetMoney()<<endl;
-	cout<<"Dealer's money, "<<dealer_.GetMoney()<<endl;
+	cout<<"Your money, "<<player_.GetChips()<<endl;
+	cout<<"Dealer's money, "<<dealer_.GetChips()<<endl;
 	cout<<"-------------------------"<<endl;
 }
 
@@ -270,7 +253,7 @@ bool Game::PromptExit(){
 			if(bet<=0){
 				cout<<"You must must bet at least 1 chip each hand!"<<endl;
 			}
-			else if(bet>player_.GetMoney()){
+			else if(bet>player_.GetChips()){
 				cout<<"You must bet within your budget!"<<endl;
 			}
 			else break;
@@ -285,6 +268,6 @@ void Game::SaveGame(){
 	cout <<"Saving game to save.dat"<<endl;
 	ofstream myfile;
  	myfile.open ("save.dat");
- 	myfile << player_.GetMoney()<<" "<<dealer_.GetMoney();
+ 	myfile << player_.GetChips()<<" "<<dealer_.GetChips();
  	myfile.close();
 }

@@ -1,3 +1,8 @@
+// Author: Shawn Wu
+// Email:  wuxu@cs.ucla.edu
+
+// Describe one or more decks of cards
+
 #include <vector>
 #include <assert.h>
 #include <random>
@@ -11,6 +16,8 @@ typedef unsigned __int32 uint32_t;
 
 
 using namespace std;
+
+// Describe one single card 
 struct Card{
 	int num;
 	int color;
@@ -21,15 +28,20 @@ struct Card{
 	void DisplayCard();
 };
 
+// Describe one or more decks of cards used in the game
 class Cards{
 public:
+	// Initialize one deck of cards
 	Cards();
+	// Specify how many decks of cards should be used
+	Cards(int num);
 	void Shuffle();
 	Card SendCard();
 	void PrintAllFreshCards();
 private:
 	vector<Card > fresh_cards_;
 	vector<Card > used_cards_;
+	// This method is to be called in the Shuffle method. To ensure the shuffle is random.
 	struct Gen {
 		mt19937 g;
 		Gen(): g(static_cast<uint32_t>(time(0))){}

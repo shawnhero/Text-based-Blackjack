@@ -1,17 +1,29 @@
+// Author: Shawn Wu
+// Email:  wuxu@cs.ucla.edu
+
+// Provides a class describing the player's status
+// 1. Playerer is the base class. It is used to describe the user of this program;
+// 2. Dealer is inherited from Player to describe the dealer, which is controlled by the computer.
+// 3. SuperGambler is inherited from Player. In the analysis mode it can be used to simulate a player taking certain strategies.
+
 #include "player.h"
 #include <iostream>
 using namespace std;
 
+// After each hand, the cards need to be cleared
 void Player::ClearCards(){
 	player_cards_.clear();
 }
 
+// The player choose to hit card
+// add a card the player_cards_
 void Player::HitCard(Card newcard){
 	player_cards_.push_back(newcard);
 	// update the card status every time after a hit
 	UpdateStatus();
 }
 
+// Get the Updated Status
 void Player::UpdateStatus(){
 	// first determin whether it's busted
 	int sum=0;
@@ -51,29 +63,32 @@ void Player::UpdateStatus(){
 	}
 }
 
+// Determine whether it's a blakcjack from Status
 bool Player::IsBlackJack(){
 	return status_.is_blackjack;
 
 }
 
+// Determine whether it's busted from Status
 bool Player::IsBusted(){
 	return status_.is_busted;
 }
 
+// Get the Max sum of the cards from Status
 int Player::MaxSum(){
 	return status_.max_sum;
 }
 
-int Player::GetMoney(){
-	return money_in_hand_;
+int Player::GetChips(){
+	return chips_in_hand_;
 }
 
-void Player::SetMoney(int m){
-	money_in_hand_ = m;
+void Player::SetChips(int m){
+	chips_in_hand_ = m;
 }
 
 void Player::CloseMoney(int profit){
-	money_in_hand_ += profit;
+	chips_in_hand_ += profit;
 }
 
 ACTION Dealer::WhatToDo(){

@@ -1,3 +1,8 @@
+// Author: Shawn Wu
+// Email:  wuxu@cs.ucla.edu
+
+// Describe one or more decks of cards
+
 #include "cards.h"
 #include <iostream>
 #include <vector>
@@ -51,8 +56,23 @@ Cards::Cards(){
 		fresh_cards_.push_back(newcard);
 	}
 	used_cards_.clear();
+	Shuffle();
 }
 
+Cards::Cards(int num){
+	if(num<=0) num = 1;
+	for(int j=0; j<=num; j++){
+		for(int i=0; i<52; i++){
+			Card newcard(i/4+1, i%4);
+			fresh_cards_.push_back(newcard);
+		}
+
+	}
+	used_cards_.clear();
+	Shuffle();
+}
+
+// for debug and test use
 void Cards::PrintAllFreshCards(){
 	for(auto i:fresh_cards_){
 		i.DisplayCard();
