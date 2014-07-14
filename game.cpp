@@ -140,7 +140,7 @@ void Game::GameLoop(){
 		bool invalid_input = true;
 		string input;
 		char input_char;
-		while(!invalid_input){
+		while(invalid_input){
 			// according to the specific cards the player got, prompt different choices
 			if(player_first_round){
 				// double down is allowed after a split
