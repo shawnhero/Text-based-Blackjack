@@ -22,6 +22,7 @@ protected:
 	// here 1 stands for Ace. However, it could either be 1 or 11
 	// 11,12,13 stand for J,Q,K, respectively
 	vector<Card > player_cards_;
+	vector<Card > player_cards2_;
 
 	// Remaining chips in hand for the player
 	int chips_in_hand_;
@@ -32,7 +33,7 @@ protected:
 		bool is_sum_soft;
 		int max_sum;
 		bool is_blackjack;
-	}status_;
+	}status_, status2_;
 public:
 	// When a Player is initialized, set the chips to the default number
 	Player():chips_in_hand_(kPlayerChips){}
@@ -40,7 +41,7 @@ public:
 	// After each hand, the cards need to be cleared
 	void ClearCards();
 
-	// The player choose to hit card
+	// The player choose to hit card(or double card)
 	// add a card the player_cards_
 	void HitCard(Card newcard);
 
@@ -65,6 +66,25 @@ public:
 	// After each hand, the player/dealer either win some chips or lose some.
 	// The profit will be added to chips_in_hand_
 	void CloseMoney(int profit);
+
+	// must be called only to evaluate whether to split
+	bool CanSplit();
+
+
+	// split the player's cards to two 
+	// pop out one card and return it.
+	// must be called when the player has exactly two identical cards
+	Card SplitCard();
+
+	// below are some overloaded methods provided for the split
+
+	// Get called if previously the user has chosen to split the card.
+	// the second parameter determines which set of card to hit.
+	void HitCard(Card newcard, bool isfirst);
+	void UpdateStatus(bool isfirst);
+	bool IsBlackJack(bool isfirst);
+	bool IsBusted(bool isfirst);
+	int MaxSum(bool isfirst);
 
 	virtual void PrintCards(bool firstround);
 };

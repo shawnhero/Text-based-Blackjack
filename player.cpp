@@ -13,6 +13,7 @@ using namespace std;
 // After each hand, the cards need to be cleared
 void Player::ClearCards(){
 	player_cards_.clear();
+	player_cards2_.clear();
 }
 
 // The player choose to hit card
@@ -23,12 +24,18 @@ void Player::HitCard(Card newcard){
 	UpdateStatus();
 }
 
-// Get the Updated Status
 void Player::UpdateStatus(){
+	UpdateStatus(true);
+}
+
+// Update the Status
+void Player::UpdateStatus(bool isfirst){
 	// first determin whether it's busted
 	int sum=0;
 	int ace_num = 0;
-	for(auto i:player_cards_){
+	auto & cards = isfirst?player_cards_:player_cards2_;
+	auto & status = isfirst?status_:status2_;
+	for(auto i:cards){
 		int card_point=i.num;
 		// J,Q,K are treated as 10
 		card_point=(card_point>10)?10:card_point;
@@ -40,16 +47,16 @@ void Player::UpdateStatus(){
 		sum += card_point;
 	}
 	if(sum>21){
-		status_.is_busted = true;
-		status_.is_sum_soft = false;
-		status_.max_sum = sum;
-		status_.is_blackjack = false;
+		status.is_busted = true;
+		status.is_sum_soft = false;
+		status.max_sum = sum;
+		status.is_blackjack = false;
 	}
 	else{
 		// if not busted, determine the sum and soft status
-		status_.is_busted = false;
+		status.is_busted = false;
 		// the point is soft if there is an ace treated as 11
-		status_.is_sum_soft = (ace_num!=0) && (sum<=11);
+		status.is_sum_soft = (ace_num!=0) && (sum<=11);
 		// try to add 10 until almost bust
 		while(ace_num>0){
 			sum += 10;
@@ -58,8 +65,8 @@ void Player::UpdateStatus(){
 				break;
 			}
 		}
-		status_.max_sum = sum;
-		status_.is_blackjack = (sum==21);
+		status.max_sum = sum;
+		status.is_blackjack = (sum==21);
 	}
 }
 
@@ -87,6 +94,55 @@ void Player::SetChips(int m){
 	chips_in_hand_ = m;
 }
 
+// must be called only to evaluate whether to split
+bool Player::CanSplit(){
+	if(!  (player_cards_.size()==2 && player_cards2_.empty() )  ){
+		return false;
+	}
+	if(player_cards_[0].num<10 && player_cards_[1].num<10){
+		return player_cards_[0].num==player_cards_[1].num;
+	}
+	else if (player_cards_[0].num>=10 && player_cards_[1].num>=10){
+		return true;
+	}
+	return false;
+}
+
+// split the player's cards to two parts
+// must be called when the player has exactly two identical cards
+Card Player::SplitCard(){
+	assert(player_cards_.size()==2 && player_cards2_.empty());
+	player_cards_.pop_back();
+	return player_cards_[0];
+}
+
+
+///////////////////////////////////////////////////
+// the overloaded methods for split
+
+void Player::HitCard(Card newcard, bool isfirst){
+	auto & cards = isfirst?player_cards_:player_cards2_;
+	cards.push_back(newcard);
+	UpdateStatus(isfirst);
+}
+
+bool Player::IsBlackJack(bool isfirst){
+	auto & status = isfirst?status_:status2_;
+	return status.is_blackjack;
+}
+
+bool Player::IsBusted(bool isfirst){
+	auto & status = isfirst?status_:status2_;
+	return status.is_busted;
+}
+
+int Player::MaxSum(bool isfirst){
+	auto & status = isfirst?status_:status2_;
+	return status.max_sum;
+}
+///////////////////////////////////////////////////
+
+
 void Player::CloseMoney(int profit){
 	chips_in_hand_ += profit;
 }
@@ -111,6 +167,7 @@ void Player::PrintCards(bool firstround){
 	cout << MaxSum()<<endl;
 
 }
+
 
 void Dealer::PrintCards(bool firstround){
 	cout <<"Dealer:\t";

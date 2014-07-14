@@ -13,10 +13,11 @@ int main(){
 		if(mygame.PromptExit()) break;
 		WHO possible_winner = mygame.StartGame();
 		if(possible_winner!=kNeither){
-			mygame.CloseGame(possible_winner);
+			mygame.CloseGame();
 		}
 		else{
-			mygame.CloseGame(mygame.GameLoop());	
+			mygame.GameLoop();
+			mygame.CloseGame();	
 		}
 	}
 	return 0;
