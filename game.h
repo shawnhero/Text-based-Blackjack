@@ -42,13 +42,28 @@ public:
 	// kBoth stands for a push, while kNeither means the game should continue 
 	WHO StartGame();
 
-	// split the card
-	// the new set of cards will be hold be a virtual player: player_split
-	void Split();
+	// deal with the player's choices
+	// send cards or changes bets
+	// return whether to continue on Dealer's Loop. 
+	// If the player busted, return false 
+	// If the player got a blackjack, return false
+	// Else return true
+	bool PlayerLoop();
+
+	// deal with the player's choices
+	// send cards
+	// set the winner. 
+	void DealerLoop();
 
 	// The main game loop
 	// Include first the player's loop and then the dealer's loop
 	void GameLoop();
+
+	// split the card
+	// the new set of cards will be hold be a virtual player: player_split
+	void Split();
+
+
 
 
 
