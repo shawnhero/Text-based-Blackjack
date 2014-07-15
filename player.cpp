@@ -152,6 +152,7 @@ ACTION Dealer::WhatToDo(){
 	}
 }
 
+// to add: hint blackjack
 void Player::PrintCards(bool firstround){
 	cout <<"Player:\t";
 	for(auto i:player_cards_){

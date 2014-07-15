@@ -117,10 +117,33 @@ WHO Game::StartGame(){
 }
 
 // split the card
-// the new set of cards will be hold be a virtual player: player_split
-void Game::Split(){
-	player_split_.HitCard(player_.SplitCard());
-	splitted_ = true;
+// the new set of cards will be hold be a virtual player
+// the virtual player will be added to a vector
+void Game::Split(int index){
+	//assert(split_number_ > 0);
+	Player newPlayer;
+	if(split_number_==0){
+		// first time to split
+		// after first split, there will be two players in the vector
+		assert(index==0);
+		newPlayer.HitCard(player_.SplitCard());
+		splitted_hands_.push_back(player_);
+		splitted_hands_.push_back(newPlayer);
+	}
+	else{
+		// not the first time to split
+		assert(index <= split_number_ && index>=0);
+		newPlayer.HitCard(splitted_hands_[index].SplitCard());
+		auto it = splitted_hands_.begin() + index + 1;
+		splitted_hands_.insert(it, newPlayer);
+	}
+	split_number_ ++;
+	WHO new_winner;
+	// every split will add a winner to the vector to record who is the winner
+	winners_.push_back(new_winner);
+	// should be true
+	assert(split_number_ == splitted_hands_.size()-1);
+	//splitted_ = true;
 }
 
 // deal with the player's choices
@@ -130,8 +153,15 @@ void Game::Split(){
 // If the player got a blackjack, return false
 // Else return true
 bool Game::PlayerLoop(){
-	auto & player = (splitted_ && splitted_loop_) ? player_split_ : player_;
-	auto & winner = (splitted_ && splitted_loop_) ? split_winner_ : winner_ ;
+	auto & player = (split_number_ == 0) ? player_ : splitted_hands_[current_hand_];
+	auto & winner = (split_number_ == 0) ? winner_ : winners_[current_hand_] ;
+
+	if(split_number_){
+		cout<<endl<<"-------------------------"<<endl;
+		cout<<"Now decide on your hand "<<current_hand_ << <<","<< endl;
+		player.PrintCards(false);
+	}
+	
 	// Player's loop
 	// add feature for double, split and surrender
 	bool player_first_round = true;
@@ -149,10 +179,7 @@ bool Game::PlayerLoop(){
 			if(player_first_round){
 				// double down is allowed after a split
 				// but surrender is not allowed after a split
-				if(splitted_){
-					cout<<"Do you wanna Hit(h), Stand(s), or DoubleDown(d)?";
-				}
-				else if(player.CanSplit()){
+				if(player.CanSplit() && split_number_ < split_limit_){
 					cout << "Do you wanna Hit(h), Stand(s), DoubleDown(d), Split(t), or Surrender(r)?";
 				}
 				else{
@@ -175,7 +202,9 @@ bool Game::PlayerLoop(){
 					invalid_input = false;
 					break;
 				case 't':
-					if(splitted_){
+					if(split_number_ >= split_limit_){
+						cout<<"This casino has a limit of "<<split_limit_<<"splits."<<endl;
+						cout<<"You have splitted for "<<split_number_<<" times"<<endl;
 						cout<<"You cannot split any more."<<endl;
 						break;
 					}
@@ -192,7 +221,7 @@ bool Game::PlayerLoop(){
 					break;
 
 				case 'r':
-					if(splitted_){
+					if(split_number_){
 						cout<<"You cannot surrender after a split."<<endl;
 					}
 					if(!player_first_round){
@@ -235,19 +264,21 @@ bool Game::PlayerLoop(){
 				if(input_char=='d') end_of_player_loop=true;
 				break;
 			case 'r':
+				//player chose to surrender. Reduce half of his bet
 				SetBet(GetBet()/2);
 				cout << "You chose to surrender. Your bet is now,\t" << GetBet()<<endl;
 				winner = kDealer;
 				return false;
+			
 			// now comes the most exciting part.
 			// Split the card
 			case 't':
-				Split();	// in the same time splitted is set to be true
-				cout<<"You have splitted."<<endl;
-				cout<<endl<<"Now first decide on your first half,"<<endl;
-				player_.PrintCards(false);
-				splitted_loop_ = false;
-				bool todealer1 = PlayerLoop();
+				Split(current_hand_);	// in the same time split_number_ increment by 1
+				PrintSplitted();
+				cout<<endl<<"A split is triggered.."<<endl;
+				PlayerLoop();
+
+
 				cout<<endl<<"Now decide on your second half,"<<endl;
 				player_split_.PrintCards(false);
 				splitted_loop_ = true;
@@ -303,111 +334,135 @@ void Game::DealerLoop(){
 	cout <<endl<<"Dealer choose to stand"<<endl;
 	dealer_.PrintCards(false);
 	player_.PrintCards(false);
-	int diff = dealer_.MaxSum() - player_.MaxSum();
-	if(diff>0){
-		// the dealer wins
-		winner_ = kDealer;
-	}
-	else if(diff<0){
-		// the player wins
-		winner_ = kPlayer;
-	}
-	else{
-		// it's a push
-		winner_ = kBoth;
-
-	}
-	if(!splitted_)	return;
-	// the splitted half
-	diff = dealer_.MaxSum() - player_split_.MaxSum();
-	if(diff>0){
-		// the dealer wins
-		split_winner_ = kDealer;
-		return;
-	}
-	else if(diff<0){
-		// the player wins
-		split_winner_ = kPlayer;
-		return;
-	}
-	else{
-		// it's a push
-		split_winner_ = kBoth;
-		return;
-
-	}
+	
 }
 
 // the main game loop
 // PlayerLoop and DealerLoop are called here
 // set the winner to either winner_ or splitted_winner
 void Game::GameLoop(){
-	if(PlayerLoop()){
-		DealerLoop();
+	// the split_number_ is dynamic
+	// every split will increment it by 1
+	while(current_hand_ <= split_number_){
+		PlayerLoop();
+		current_hand_ ++;
+	}
+	DealerLoop();
+	// Now we need to compare all the hands with the dealer
+	SetWinners();
+}
+
+
+// set all the winners,
+// set all the winning rates
+void Game::SetWinners(){
+	int rate;
+	if(split_number_==0){
+		rate = SetWinner_GetWinningRate(player_, winner_);
+		win_rate_2_.push_back(rate);
+	}
+	else{
+		for(int i=0; i<=split_number_; i++){
+			rate = SetWinner(splitted_hands_[i], winners_[i]);
+			win_rate_2_.push_back(rate);
+		}
+	}
+}
+
+// in: a single hand
+// set: the winner
+// return: the winning rate
+int Game::SetWinner_GetWinningRate(const & Player hand, WHO & winner){
+	// blackjack is not dertermined in this step
+	int rate = 0;
+	int diff = 0;
+	if(hand.MaxSum()>21){
+		// player is busted. 
+		// even the dealer is also busted, cause player busted first, 
+		// the winner is still the dealer
+		winner = kDealer;
+		rate = -2;
+	}
+	else if(dealer_.MaxSum()>21){
+		// dealer is busted.
+		winner = kPlayer;
+		rate = 2;
+	}
+	else if(dealer_.IsBlackJack() && !hand.IsBlackJack()){
+		// this is for the boundary condition
+		// that dealer got blackjack, the player got 21
+		winner = kDealer;
+		rate = -3;
+	}
+	else if(hand.IsBlackJack() && !dealer_.IsBlackJack()){
+		winner = kPlayer;
+		rate = 3;
+	}
+	else{
+		// for now, no bust, no blackjack
+		diff = dealer_.MaxSum() - hand.MaxSum();
+		if(diff>0){
+			// the dealer wins
+			winner = kDealer;
+			rate = -2;
+		}
+		else if(diff<0){
+			// the player wins
+			winner = kPlayer;
+			rate = 2;
+		}
+		else{
+			// it's a push
+			winner = kBoth;
+		}
 	}
 }
 
 
 void Game::CloseGame(){
-	assert(winner_!=kNeither);
-	float win_rate = 0;
-	if(splitted_){
-		cout << "Your first half,"<<endl;
-	}
-	switch(winner_){
-		case kDealer:
-			cout << "The dealer wins!"<<endl;
-			win_rate -=1;
-			// if dealer got a blackjack, player lose chips in a 3:2 way (lose 3 if he bet 2)
-			if(dealer_.IsBlackJack())	win_rate -= 0.5;
-			break;
-		case kPlayer:
-			cout << "Congratulations! You win!"<<endl;
-			win_rate += 1;
-			// if player got a blackjack, player win chips in a 3:2 way (win 3 if he bet 2)
-			if(player_.IsBlackJack())	win_rate +=0.5;
-			break;
-		case kBoth:
-			cout <<"It's a push!"<<endl;
-		default:
-			break;
-	}
-	if(splitted_){
-		cout << "Your second half,"<<endl;
-		switch(split_winner_){
+	// take into account both the Winners and the Blackjacks
+	for(int i=1; i<=split_number_; i++){
+		if(split_number_!=0){
+			cout<<endl<<"Hand "<<i<<" Summary, "<<endl;
+			cout<<"-------------------------"<<endl;
+			cout<<"Your cards,"<<endl;
+			splitted_hands_[i].PrintCards();
+			cout<<"Dealer's cards,"<<endl;
+			dealer_.PrintCards();
+		}
+		switch(winners_[i]):{
+			assert(winners_[i]!=kNeither);
 			case kDealer:
 				cout << "The dealer wins!"<<endl;
-				win_rate -= 1;
-				// if dealer got a blackjack, player lose chips in a 3:2 way (lose 3 if he bet 2)
-				if(dealer_.IsBlackJack())	win_rate -= 0.5;
 				break;
 			case kPlayer:
-				cout << "Congratulations! You win!"<<endl;
-				win_rate += 1;
-				// if player got a blackjack, player win chips in a 3:2 way (win 3 if he bet 2)
-				if(player_.IsBlackJack())	win_rate +=0.5;
+				cout << "You win!"<<endl;
 				break;
 			case kBoth:
 				cout <<"It's a push!"<<endl;
 			default:
 				break;
 		}
-
+		// close the chips
+		int profit = win_rate_2_[i] * bet_ /2
+		player_.CloseMoney(profit);
+		dealer_.CloseMoney(- profit);
+		if(profit>0){
+			cout << "You win "<<profit<<" chips."<<endl;
+		}
+		else if (profit<0){
+			cout <<"You lose "<<profit<<" chips."<<endl;
+		}
 	}
-	player_.CloseMoney(win_rate * bet_);
-	dealer_.CloseMoney(- win_rate * bet_);
-	
 	PrintChipStatus();
 
 	// clear the cards
 	dealer_.ClearCards();
 	player_.ClearCards();
-	player_split_.ClearCards();
+	splitted_hands_.clear();
+	win_rate_2_.clear();
+	winners_.clear();
 	// reset all the values
-	splitted_ = false;
-	splitted_loop_ = false;
-	winner_ = kNeither;
-	split_winner_ = kNeither;
 }
 
 
