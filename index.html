@@ -32,14 +32,34 @@
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
         <h1>
-<a name="text-based-blackjack" class="anchor" href="#text-based-blackjack"><span class="octicon octicon-link"></span></a>Text Based BlackJack</h1>
+<a name="text-based-blackjack" class="anchor" href="#text-based-blackjack"><span class="octicon octicon-link"></span></a>text-based-BlackJack</h1>
 
 <p>This is a simple text-based blackjack written fully in C++. Most of the key features of Blackjack are fulfilled.</p>
 
-<ul>
-<li>A much simpler version can be found <a href="./tree/easy_mode">here</a>
+<p>To compile and run the program,</p>
+
+<ol>
+<li>
+<p>Linux/Mac OS</p>
+
+<pre><code>make
+./bj
+</code></pre>
 </li>
-<li>A seperate <a href="./../auto_analysis">branch</a> is created in an attempt to analyze how the factors affect the winning probabilities, along with what is right thing to do for the players. I'm also considering to get the max winning probability (rate) a player can reach, given that there's only one deck of cards and the player is capabale of memorizing all the used cards.</li>
+<li>
+<p>Windows</p>
+
+<pre><code>Compile and run using any IDE.
+</code></pre>
+</li>
+</ol><p>Screenshot,</p>
+
+<p><img align="center" src="http://shawnhero.github.io/img/bj_overview.png" height="400"></p>
+
+<ul>
+<li>A much simpler version can be found <a href="https://github.com/shawnhero/Text-based-Blackjack/tree/easy_mode">here</a>
+</li>
+<li>A seperate <a href="https://github.com/shawnhero/Text-based-Blackjack/tree/auto_analysis">branch</a> is created in an attempt to analyze how the factors affect the winning probabilities, along with what is right thing to do for the players. I'm also considering to get the max winning probability (rate) a player can reach, given that there's only one deck of cards and the player is capabale of memorizing all the used cards.</li>
 </ul><h1>
 <a name="key-features" class="anchor" href="#key-features"><span class="octicon octicon-link"></span></a>Key Features</h1>
 
@@ -80,7 +100,7 @@
 
 <p>Example of mutiple split,</p>
 
-<p><img src="http://shawnhero.github.io/img/bj_split.png" height="200"></p>
+<p><img src="http://shawnhero.github.io/img/bj_split.png" height="400"></p>
 </blockquote>
 </li>
 <li><p><strong>Surrender</strong> (only available as first decision of a hand). After the dealer has checked for blackjack, the user can choose to surrender. By doing so, the house takes half the player's bet and returns the other half to the player.</p></li>
