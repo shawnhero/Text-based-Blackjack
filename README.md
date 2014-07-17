@@ -1,35 +1,50 @@
 text-based-BlackJack
 ====================
 
-Try to find how the factors below affect the result of the game.
+This is a simple text-based blackjack written fully in C++. Most of the key features of Blackjack are fulfilled.
+
+- A much simpler version can be found [here](../easy_mode)
+- A seperate [branch](../auto_analysis) is created in an attempt to analyze how the factors affect the winning probabilities, along with what is right thing to do for the players. I'm also considering to get the max winning probability (rate) a player can reach, given that there's only one deck of cards and the player is capabale of memorizing all the used cards.
+
 #Key Features
 ##Game Mode (Dealer's Perspective)
-1. Shuffle Rules. Either a shuffle is triggered every hand or it's not triggered until there're 15 or less cards left.
-2. Choose how many decks are used in a game.
+1. Choose how many decks are used in a game.
+2. Shuffle Rules. Either a shuffle is triggered every hand or it's not triggered until there're 15 or less cards left.
 3. [Soft 17 Rule](http://www.smartgaming.com/html/articles/soft17.htm). Choose whether the deal stands when he has a soft 17.
-> For this branch, all the above are hard coded. There is only one deck of cards. A shuffle will be triggered only when the remainning cards are less than 15, which put the used cards and remaining cards together and shuffle once. Also the dealer will continue to hit if the 17 is soft.
+4. Split limits. The maximum number that a player can split.
 
 All the above are stored in a file named "game.config". If not found, the default values will be used, which are respectively,
 
-1. A shuffle is triggered only when the cards are not enough to use (15 or less).
-2. Only 1 deck of cards is used.
+1. Only 1 deck of cards is used.
+2. A shuffle is triggered only when the cards are not enough to use (15 or less).
 3. Dealer hits when the 17 is soft.
+4. The player can split no more than 3 times.
 
-##Game Strategy (Player's Perspective)
-###Same as the Dealer
-The player adopt a strategy same as the dealer.
 
-###[HitOrStand](http://www.hitorstand.net/strategy.php) Strategy
-1. Double when you have 10 and the dealer show a card less than 10.
-2. Stand if you have 17 or above.
-3. Always stand when you have 19 or more.
-3. Don't risk bursting when the dealer show 6 or below. Stand and hope he bursts.
-4. When you have a soft 18, double if the dealer shows a 3-6.
-5. Double-down when you have 11, unless the dealer show an Ace.
-6. Double-down when you have 10, and the deaeler shows a card less than 10.
-7. When you have a soft Ace always hit or double if you have less than 18.
-8.  
+##Game Rules
+###Player Decisions
+1. **Hit**. Take another card from the dealer
+2. **Stand**. Take no more cards.
+3. **DoubleDown**. The player is allowed to increase the initial bet by up to 100% in exchange for committing to stand after receiving exactly one more card.
+4. **Split** (only available as the first decision of a hand). If the first two cards have the same value, the player can split them into two hands, by moving a second bet equal to the first into an area outside the betting box. The dealer separates the two cards and draws an additional card on each, placing one bet with each hand. The player then plays out the two separate hands in turn.
+	> After a split, the player can still double on the first round, but he can no longer split. The number of split limits is by default 3, but can be changed in the `game.config` file.
+	
+	> Example of mutiple split,
+	
+	>![](http://shawnhero.github.io/img/bj_split.png)
+	
+5. **Surrender** (only available as first decision of a hand). After the dealer has checked for blackjack, the user can choose to surrender. By doing so, the house takes half the player's bet and returns the other half to the player.
 
-Use the strategy table to determine what is the right thing to do.
+###Dealer's Decisions
+1. **Hit**. If the dealer's cards add equal to or less than 16, he must choose to hit.
+2. **Stand**. If the dealer's cards add equal to or more than 17, he must choose to stand.
 
-###Investigate The Best Strategy on the First Round
+###Beat the Dealer
+The player can beat the dealer in one of the following ways,
+- Get 21 points on the player's first two cards (called a blackjack), without a dealer blackjack;
+- Reach a final score higher than the dealer without exceeding 21; or
+let the dealer draw additional cards until his or her hand exceeds 21.
+
+##Load and Save the Game
+The game offers a choice to load game and save games.
+
