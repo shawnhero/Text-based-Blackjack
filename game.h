@@ -79,6 +79,8 @@ private:
 public:
 	Game():bet_(1), winner_(kNeither), split_limit_(10), split_number_(0), current_hand_(0), surrender_flag_(false){}
 
+	// load the game configuration file
+	void LoadConfig();
 	// determine whether someone is running out of money
 	bool MoneyOut();
 	// first try to read from configure file

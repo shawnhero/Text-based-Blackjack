@@ -7,6 +7,7 @@ Try to find how the factors below affect the result of the game.
 1. Shuffle Rules. Either a shuffle is triggered every hand or it's not triggered until there're 15 or less cards left.
 2. Choose how many decks are used in a game.
 3. [Soft 17 Rule](http://www.smartgaming.com/html/articles/soft17.htm). Choose whether the deal stands when he has a soft 17.
+> For this branch, all the above are hard coded. There is only one deck of cards. A shuffle will be triggered only when the remainning cards are less than 15, which put the used cards and remaining cards together and shuffle once. Also the dealer will continue to hit if the 17 is soft.
 
 All the above are stored in a file named "game.config". If not found, the default values will be used, which are respectively,
 

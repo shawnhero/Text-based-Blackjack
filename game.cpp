@@ -18,6 +18,12 @@ void Game::LoadGame(){
 		cout<<"Load Last Saved Game?(y/n)";
 		string input;
 		cin>>input;
+		// prevent the ctrl+D hell
+		if(cin.eof()){
+			cout << "Hate ctrl-D hell\n";
+			std::exit(EXIT_FAILURE);
+		}
+
 		if(input.compare("y")==0){
 			// User chooses to load saved game
 			ifstream file("save.dat");
@@ -226,6 +232,11 @@ bool Game::PlayerLoop(){
 			}
 			// Get and evaluate the player's input
 			cin >> input;
+					// prevent the ctrl+D hell
+			if(cin.eof()){
+				cout << "Hate ctrl-D hell\n";
+				std::exit(EXIT_FAILURE);
+			}
 			if(input.size()!=1){
 				cout<<"I didn't get that."<<endl;
 				continue;
@@ -555,6 +566,11 @@ bool Game::PromptExit(){
 	while(true){
 		cout << endl<<"Enter your bet(enter x to exit game),";
 		cin>>input;
+		// prevent the ctrl+D hell
+		if(cin.eof()){
+			cout << "Hate ctrl-D hell\n";
+			std::exit(EXIT_FAILURE);
+		}
 		stringstream s(input);
 		if(!(s>>bet)){
 			// the player entered a non-integer
