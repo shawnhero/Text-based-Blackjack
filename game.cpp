@@ -28,9 +28,15 @@ void Game::LoadGame(){
 				if(pchips<=0){
 					cout<<"Last time you lost all your money. A new game is started.."<<endl;
 				}
+				else if(dchips<=0){
+					cout<<"Last time you won all the money from the dealer. A new game is started.."<<endl;
+				}
 				else if(pchips + dchips == (kPlayerChips+kDealerChips)){
 					player_.SetChips(pchips);
 					dealer_.SetChips(dchips);
+				}
+				else{
+					cout <<"Incorrect file format. Creating new game profile.."<<endl;
 				}
 			}
 			else{
@@ -64,12 +70,19 @@ void Game::SetBet(int bet){
 bool Game::MoneyOut(){
 	if(player_.GetChips()<=0){
 		cout<<"You have no money left. Game Over."<<endl;
+		// save the game status
+		// next time chips will be reset upon the user load the saved game
+		SaveGame();
 		return true;
 	}
 	else if(dealer_.GetChips()<=0){
 		cout<<"You have won all the money from the dealer! Good Job!"<<endl;
+		// save the game status
+		// next time chips will be reset upon the user load the saved game
+		SaveGame();
 		return true;
 	}
+	
 	return false;
 }
 
@@ -273,7 +286,8 @@ bool Game::PlayerLoop(){
 			case 'd':
 				// player choose to double down
 				SetBet(2*GetBet());
-				cout << "Your bet is now, " << GetBet()<<endl;
+				cout <<endl<< "You chose to Double."<<endl;
+				cout<<"Your bet is now, " << GetBet()<<endl<<endl;
 			case 'h':
 				// player choose to hit
 				player.HitCard(mycards_.SendCard());
@@ -290,7 +304,9 @@ bool Game::PlayerLoop(){
 			case 'r':
 				//player chose to surrender. Reduce half of his bet
 				SetBet(GetBet()/2);
-				cout << "You chose to surrender. Your bet is now,\t" << GetBet()<<endl;
+				cout <<endl<< "You chose to Surrender."<<endl;
+				cout<<"-------------------------"<<endl;
+				cout<<"Your bet is now, " << GetBet()<<endl<<endl;
 				winner = kDealer;
 				surrender_flag_ = true;
 				return false;
@@ -324,8 +340,8 @@ bool Game::PlayerLoop(){
 // send cards
 // set the winner. 
 void Game::DealerLoop(){
-	cout<<"-------------------------"<<endl;
 	cout <<endl<<"Now the dealer's turn.."<<endl;
+	cout<<"-------------------------"<<endl;
 
 	// Deal's loop
 	while(!dealer_.IsBusted()){
@@ -357,7 +373,7 @@ void Game::DealerLoop(){
 	// now compare the cards
 
 	/// changes are needed to support busted conditions
-	cout <<endl<<"Dealer choose to stand."<<endl<<endl;
+	cout <<endl<<"Dealer choose to stand."<<endl;
 }
 
 // the main game loop
@@ -489,10 +505,10 @@ void Game::CloseGame(){
 		player_.CloseMoney(profit);
 		dealer_.CloseMoney(- profit);
 		if(profit>0){
-			cout <<endl << "You win "<<profit<<" chips."<<endl;
+			cout  << "You win "<<profit<<" chips."<<endl;
 		}
 		else if (profit<0){
-			cout <<endl <<"You lose "<<-profit<<" chips."<<endl;
+			cout  <<"You lose "<<-profit<<" chips."<<endl;
 		}
 	}
 	PrintChipStatus();
@@ -513,12 +529,21 @@ void Game::CloseGame(){
 
 
 void Game::PrintSplitted(){
-	return;
+	cout<<endl<<"Splitted Hands Summary,"<<endl;
+	cout<<"-------------------------"<<endl;
+	int j = 0;
+	for(auto & i:splitted_hands_){
+		cout << "Hand "<<j<<endl;
+		i.PrintCards();
+		j++;
+	}
+
+	
 }
 void Game::PrintChipStatus(){
 	cout<<endl<<"-------------------------"<<endl;
-	cout<<"Your money, "<<player_.GetChips()<<endl;
-	cout<<"Dealer's money, "<<dealer_.GetChips()<<endl;
+	cout<<"Your chips, "<<player_.GetChips()<<endl;
+	cout<<"Dealer's chips, "<<dealer_.GetChips()<<endl;
 	cout<<"-------------------------"<<endl;
 }
 

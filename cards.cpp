@@ -51,7 +51,7 @@ void Card::DisplayCard(){
 }
 
 Cards::Cards(){
-	type_test_cards = kSplitHell;
+	type_test_cards = kNormal;
 	for(int i=0; i<52; i++){
 		Card newcard(i/4+1, i%4);
 		fresh_cards_.push_back(newcard);

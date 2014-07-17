@@ -10,8 +10,12 @@ class Game{
 private:
 	int bet_;	// the money the player bet on this hand
 	Cards mycards_;	// the current deck of cards
-	Player player_;
 	Dealer dealer_;
+
+	// below two are used for unsplitted player
+	Player player_;
+	WHO winner_;
+	// WHO split_winner_;
 
 	// the split limitation
 	// 1 stands for there can be only 1 times of split
@@ -22,21 +26,16 @@ private:
 	// this is to inform the playerloop which hand is active now
 	int current_hand_;
 
+	// use vector of Player to support multiple splits 
 	vector < Player > splitted_hands_;
 	vector < WHO > winners_;
-	// two times of the winning rate
-	// use int to avoid troubles
+	// two times of the winning rate, use int to avoid troubles
+	// e.g., push, the rate will be 0
+	// e.g., player win, the rate will be 2
+	// e.g., dealer win, the rate will be -2
 	vector <int> win_rate_2_;
-
+	// indicate whether the player has chosen to surrender
 	bool surrender_flag_;
-
-	WHO winner_;
-	// WHO split_winner_;
-
-	struct gamemode_{
-		bool shuffle_every_hand;
-
-	};
 
 private:
 	// get/set the bet for the current round
@@ -78,7 +77,7 @@ private:
 	int SetWinner_GetWinningRate(const Player & hand, WHO & winner);
 
 public:
-	Game():bet_(1),   split_limit_(10), split_number_(0), current_hand_(0),surrender_flag_(false), winner_(kNeither){}
+	Game():bet_(1), winner_(kNeither), split_limit_(10), split_number_(0), current_hand_(0), surrender_flag_(false){}
 
 	// determine whether someone is running out of money
 	bool MoneyOut();

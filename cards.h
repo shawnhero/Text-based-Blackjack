@@ -17,7 +17,7 @@ typedef unsigned __int32 uint32_t;
 
 using namespace std;
 
-enum TESTCARDS{kSplitHell};
+enum TESTCARDS{kSplitHell, kNormal};
 // Describe one single card 
 struct Card{
 	int num;
