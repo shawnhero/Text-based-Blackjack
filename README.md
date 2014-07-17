@@ -3,8 +3,8 @@ text-based-BlackJack
 
 This is a simple text-based blackjack written fully in C++. Most of the key features of Blackjack are fulfilled.
 
-- A much simpler version can be found [here](../easy_mode)
-- A seperate [branch](../auto_analysis) is created in an attempt to analyze how the factors affect the winning probabilities, along with what is right thing to do for the players. I'm also considering to get the max winning probability (rate) a player can reach, given that there's only one deck of cards and the player is capabale of memorizing all the used cards.
+- A much simpler version can be found [here](./../easy_mode)
+- A seperate [branch](./../auto_analysis) is created in an attempt to analyze how the factors affect the winning probabilities, along with what is right thing to do for the players. I'm also considering to get the max winning probability (rate) a player can reach, given that there's only one deck of cards and the player is capabale of memorizing all the used cards.
 
 #Key Features
 ##Game Mode (Dealer's Perspective)
@@ -31,7 +31,7 @@ All the above are stored in a file named "game.config". If not found, the defaul
 	
 	> Example of mutiple split,
 	
-	>![](http://shawnhero.github.io/img/bj_split.png)
+	><img src="http://shawnhero.github.io/img/bj_split.png" height="200">
 	
 5. **Surrender** (only available as first decision of a hand). After the dealer has checked for blackjack, the user can choose to surrender. By doing so, the house takes half the player's bet and returns the other half to the player.
 
