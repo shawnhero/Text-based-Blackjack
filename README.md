@@ -3,7 +3,7 @@ text-based-BlackJack
 
 This is a simple text-based blackjack written fully in C++. Most of the key features of Blackjack are fulfilled.
 
-- A much simpler version can be found [here](./../easy_mode)
+- A much simpler version can be found [here](./tree/easy_mode)
 - A seperate [branch](./../auto_analysis) is created in an attempt to analyze how the factors affect the winning probabilities, along with what is right thing to do for the players. I'm also considering to get the max winning probability (rate) a player can reach, given that there's only one deck of cards and the player is capabale of memorizing all the used cards.
 
 #Key Features
