@@ -108,6 +108,7 @@ Card Player::SplitCard(){
 	assert(player_cards_.size()==2 && player_cards2_.empty());
 	auto newcard = player_cards_.back();
 	player_cards_.pop_back();
+	UpdateStatus();
 	return newcard;
 }
 

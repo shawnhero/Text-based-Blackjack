@@ -26,14 +26,25 @@ private:
 	// this is to inform the playerloop which hand is active now
 	int current_hand_;
 
-	// use vector of Player to support multiple splits 
-	vector < Player > splitted_hands_;
-	vector < WHO > winners_;
-	// two times of the winning rate, use int to avoid troubles
-	// e.g., push, the rate will be 0
-	// e.g., player win, the rate will be 2
-	// e.g., dealer win, the rate will be -2
-	vector <int> win_rate_2_;
+	 
+	struct Hand_Status{
+		Player hand;
+		WHO winner;
+		// two times of the winning rate, use int to avoid troubles
+		// this way we can handle the 3:2 profit of blackjack using elegant integers
+		// e.g., push, the rate will be 0
+		// e.g., player win, the rate will be 2
+		// e.g., dealer win, the rate will be -2
+		// the profit = bet * rate / 2
+		int win_rate;
+		bool isdouble;
+		Hand_Status():winner(kNeither),win_rate(0),isdouble(false){};
+	};
+	// use vector of Hand_Status to support multiple splits
+	vector< Hand_Status> hands_status_;
+	
+	// indicate a double action
+	bool double_flag_;
 	// indicate whether the player has chosen to surrender
 	bool surrender_flag_;
 
@@ -74,10 +85,10 @@ private:
 	// in: a single hand
 	// set: the winner
 	// return: the winning rate
-	int SetWinner_GetWinningRate(const Player & hand, WHO & winner);
+	void SetWinner_WinningRate(Hand_Status & h_status);
 
 public:
-	Game():bet_(1), winner_(kNeither), split_limit_(10), split_number_(0), current_hand_(0), surrender_flag_(false){}
+	Game():bet_(1), winner_(kNeither), split_limit_(3), split_number_(0), current_hand_(0), double_flag_(false),surrender_flag_(false){}
 
 	// load the game configuration file
 	void LoadConfig();
