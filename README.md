@@ -44,7 +44,7 @@ All the above are stored in a file named "game.config". If not found, the defaul
 2. **Stand**. Take no more cards.
 3. **DoubleDown**. The player is allowed to increase the initial bet by up to 100% in exchange for committing to stand after receiving exactly one more card.
 4. **Split** (only available as the first decision of a hand). If the first two cards have the same value, the player can split them into two hands, by moving a second bet equal to the first into an area outside the betting box. The dealer separates the two cards and draws an additional card on each, placing one bet with each hand. The player then plays out the two separate hands in turn.
-	> After a split, the player can still double on the first round, but he can no longer split. The number of split limits is by default 3, but can be changed in the `game.config` file.
+	> After a split, the player can still double on the first round, but he can no longer surrender. The number of split limits is by default 3, but can be changed in the `game.config` file.
 	
 	> Example of mutiple split,
 	
