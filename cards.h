@@ -17,6 +17,7 @@ typedef unsigned __int32 uint32_t;
 
 using namespace std;
 
+enum TESTCARDS{kSplitHell};
 // Describe one single card 
 struct Card{
 	int num;
@@ -41,6 +42,7 @@ public:
 private:
 	vector<Card > fresh_cards_;
 	vector<Card > used_cards_;
+	TESTCARDS type_test_cards;
 	// This method is to be called in the Shuffle method. To ensure the shuffle is random.
 	struct Gen {
 		mt19937 g;

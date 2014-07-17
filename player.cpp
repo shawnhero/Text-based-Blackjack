@@ -65,18 +65,18 @@ void Player::UpdateStatus(){
 }
 
 // Determine whether it's a blakcjack from Status
-bool Player::IsBlackJack(){
+bool Player::IsBlackJack() const {
 	return status_.is_blackjack;
 
 }
 
 // Determine whether it's busted from Status
-bool Player::IsBusted(){
+bool Player::IsBusted() const {
 	return status_.is_busted;
 }
 
 // Get the Max sum of the cards from Status
-int Player::MaxSum(){
+int Player::MaxSum() const {
 	return status_.max_sum;
 }
 
@@ -112,30 +112,30 @@ Card Player::SplitCard(){
 }
 
 
-///////////////////////////////////////////////////
-// the overloaded methods for split
+// ///////////////////////////////////////////////////
+// // the overloaded methods for split
 
-void Player::HitCard(Card newcard, bool isfirst){
-	auto & cards = isfirst?player_cards_:player_cards2_;
-	cards.push_back(newcard);
-	UpdateStatus(isfirst);
-}
+// void Player::HitCard(Card newcard, bool isfirst){
+// 	auto & cards = isfirst?player_cards_:player_cards2_;
+// 	cards.push_back(newcard);
+// 	UpdateStatus(isfirst);
+// }
 
-bool Player::IsBlackJack(bool isfirst){
-	auto & status = isfirst?status_:status2_;
-	return status.is_blackjack;
-}
+// bool Player::IsBlackJack(bool isfirst){
+// 	auto & status = isfirst?status_:status2_;
+// 	return status.is_blackjack;
+// }
 
-bool Player::IsBusted(bool isfirst){
-	auto & status = isfirst?status_:status2_;
-	return status.is_busted;
-}
+// bool Player::IsBusted(bool isfirst){
+// 	auto & status = isfirst?status_:status2_;
+// 	return status.is_busted;
+// }
 
-int Player::MaxSum(bool isfirst){
-	auto & status = isfirst?status_:status2_;
-	return status.max_sum;
-}
-///////////////////////////////////////////////////
+// int Player::MaxSum(bool isfirst){
+// 	auto & status = isfirst?status_:status2_;
+// 	return status.max_sum;
+// }
+// ///////////////////////////////////////////////////
 
 
 void Player::CloseMoney(int profit){

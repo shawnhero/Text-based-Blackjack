@@ -51,6 +51,7 @@ void Card::DisplayCard(){
 }
 
 Cards::Cards(){
+	type_test_cards = kSplitHell;
 	for(int i=0; i<52; i++){
 		Card newcard(i/4+1, i%4);
 		fresh_cards_.push_back(newcard);
@@ -72,6 +73,7 @@ Cards::Cards(int num){
 	Shuffle();
 }
 
+
 // for debug and test use
 void Cards::PrintAllFreshCards(){
 	for(auto i:fresh_cards_){
@@ -81,12 +83,19 @@ void Cards::PrintAllFreshCards(){
 
 
 void Cards::Shuffle(){
-	// first merge two parts into one, and clear the used cards
-	fresh_cards_.insert(fresh_cards_.end(), used_cards_.begin(), used_cards_.end());
-	used_cards_.clear();
-	// then do the shuffle
-	// if Gen() is not set, everytime the result will be the same
-	random_shuffle(fresh_cards_.begin(), fresh_cards_.end(), Gen());
+	switch(type_test_cards){
+		case kSplitHell:
+			break;
+		default:
+			// first merge two parts into one, and clear the used cards
+			fresh_cards_.insert(fresh_cards_.end(), used_cards_.begin(), used_cards_.end());
+			used_cards_.clear();
+			// then do the shuffle
+			// if Gen() is not set, everytime the result will be the same
+			random_shuffle(fresh_cards_.begin(), fresh_cards_.end(), Gen());
+			break;
+	}
+
 }
 
 Card Cards::SendCard(){

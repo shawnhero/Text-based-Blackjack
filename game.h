@@ -16,11 +16,11 @@ private:
 	// the split limitation
 	// 1 stands for there can be only 1 times of split
 	int split_limit_;
+	int split_number_;
 
 	// the current hand of all the splitted ones
 	// this is to inform the playerloop which hand is active now
 	int current_hand_;
-	int split_number_;
 
 	vector < Player > splitted_hands_;
 	vector < WHO > winners_;
@@ -28,10 +28,10 @@ private:
 	// use int to avoid troubles
 	vector <int> win_rate_2_;
 
-	bool splitted_;
-	bool splitted_loop_;
+	bool surrender_flag_;
+
 	WHO winner_;
-	WHO split_winner_;
+	// WHO split_winner_;
 
 	struct gamemode_{
 		bool shuffle_every_hand;
@@ -40,11 +40,10 @@ private:
 
 private:
 	// get/set the bet for the current round
-	int GetBet();
+	int GetBet() ;
 	void SetBet(int bet);
 
-	// determine whether someone is running out of money
-	bool MoneyOut();
+	
 
 	// deal with the player's choices
 	// send cards or changes bets
@@ -61,7 +60,7 @@ private:
 
 	// split the card
 	// the new set of cards will be hold be a virtual player: player_split
-	void Split();
+	void Split(int index);
 
 	// print all the splitted cards
 	void PrintSplitted();
@@ -69,8 +68,20 @@ private:
 	// Print how many chips for the player and dealer
 	void PrintChipStatus();
 
+	// set all the winners,
+	// set all the winning rates
+	void SetWinners();
+
+	// in: a single hand
+	// set: the winner
+	// return: the winning rate
+	int SetWinner_GetWinningRate(const Player & hand, WHO & winner);
+
 public:
-	Game():bet_(1), splitted_(false), winner_(kNeither), split_winner_(kNeither), split_limit_(1), split_number_(0), current_hand_(0){}
+	Game():bet_(1),   split_limit_(10), split_number_(0), current_hand_(0),surrender_flag_(false), winner_(kNeither){}
+
+	// determine whether someone is running out of money
+	bool MoneyOut();
 	// first try to read from configure file
 	// if not found, then do some initialization
 	// Hmm, maybe I'll add some encryption feature, 

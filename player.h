@@ -49,13 +49,13 @@ public:
 	void UpdateStatus();
 
 	// Determine whether it's a blakcjack from Status
-	bool IsBlackJack();
+	bool IsBlackJack() const;
 
 	// Determine whether it's busted from Status
-	bool IsBusted();
+	bool IsBusted() const;
 
 	// Get the Max sum of the cards from Status
-	int MaxSum();
+	int MaxSum() const;
 
 
 	// Return the current chips left for the player
@@ -76,17 +76,19 @@ public:
 	// must be called when the player has exactly two identical cards
 	Card SplitCard();
 
-	// below are some overloaded methods provided for the split
+	// // below are some overloaded methods provided for the split
 
-	// Get called if previously the user has chosen to split the card.
-	// the second parameter determines which set of card to hit.
-	void HitCard(Card newcard, bool isfirst);
-	void UpdateStatus(bool isfirst);
-	bool IsBlackJack(bool isfirst);
-	bool IsBusted(bool isfirst);
-	int MaxSum(bool isfirst);
+	// // Get called if previously the user has chosen to split the card.
+	// // the second parameter determines which set of card to hit.
+	// void HitCard(Card newcard, bool isfirst);
+	// void UpdateStatus(bool isfirst);
+	// bool IsBlackJack(bool isfirst);
+	// bool IsBusted(bool isfirst);
+	// int MaxSum(bool isfirst);
 
 	virtual void PrintCards(bool firstround);
+	
+	void PrintCards(){PrintCards(false);}
 };
 
 class Dealer: public Player{
@@ -98,6 +100,8 @@ public:
 	// Here the soft 17 rule (See http://www.smartgaming.com/html/articles/soft17.htm) is applied.
 	ACTION WhatToDo();
 	void PrintCards(bool firstround);
+
+	void PrintCards(){PrintCards(false);}
 };
 
 class SuperGambler: public Player{
