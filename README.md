@@ -1,26 +1,80 @@
-BlackJack Game Analysis
+text-based-BlackJack
 ====================
 
-> For a interactive game version, see the [master](https://github.com/shawnhero/Text-based-Blackjack/tree/master) branch.
+This is a simple text-based blackjack written fully in C++. Most of the key features of Blackjack are fulfilled.
+
+To compile and run the program,
+
+1. Linux/Mac OS
+	
+	
+		make
+		./bj
+
+2. Windows
+
+		Compile and run using any IDE.
+		
+
+Screenshot,
+
+<img align="center"" src="http://shawnhero.github.io/img/bj_overview.png" height=400>
+
+- A much simpler version can be found [here](https://github.com/shawnhero/Text-based-Blackjack/tree/easy_mode)
+- A seperate [branch](https://github.com/shawnhero/Text-based-Blackjack/tree/auto_analysis) is created in an attempt to analyze how the factors affect the winning probabilities, along with what is right thing to do for the players. I'm also considering to get the max winning probability (rate) a player can reach, given that there's only one deck of cards and the player is capabale of memorizing all the used cards.
+
+#Key Features
+##Load Game Settings (Dealer's Perspective)
+1. Choose how many decks are used in a game.
+2. Shuffle Rules. Either a shuffle is triggered every hand or it's not triggered until there're 15 or less cards left.
+3. [Soft 17 Rule](http://www.smartgaming.com/html/articles/soft17.htm). Choose whether the deal stands when he has a soft 17.
+4. Split limits. The maximum number that a player can split.
+
+All the above are stored in a file named "bjconfig.dat".
+
+> A typical `bjconfig.dat` is as follows,
 
 
+		DeckNum	2
+		SplitLimit	2
+		ShuffleEveryRound	0
+		HitSoft17	1
 
-The purpose of this branch is to discover and analyze something interesting of the game BlackJack.
-
-In order to do this,
-
-1. Find a way to simulate the user's input. Or rewrite the whole logic of the game loop (might be better).
-2. Log all the game information in a single `.csv` file.
-3. Use R or Python to analyze the result of the file.
-
-Factors to change can be classified into 2 aspectes,
-
-1. The game settings, which can already be modified by the `bjconfig.dat` file.
-2. Player's strategy. This need to be hard coded in the `Action SuperGambler::WhatToDo()` method. The input parameters should be 
-	1.	The dealer's cards that the player can see. (This part can be easy, especially for the first round. There is a [table](http://www.blackjackinfo.com/bjbse.php) which can be referred to.)
-	2. The used cards.(This part may be very hard. To get the wisest decision lots of advanced mathematical derivations might be applied.)
+> A screenshot how the program restricts the number of splits,
+<img align="center"" src="http://shawnhero.github.io/img/bj_split_restrict.png" height=400>
 
 
-The final objective is to find the maximum winning rate a most skilled player can reach. Also we may find lots of other interesting stuff which may help us to win money in Las Vegas.
+If not found, the default values will be used, which are respectively,
 
-I'll continue on this project hopefully in August, 2014.
+1. Only 1 deck of cards is used.
+2. A shuffle is triggered only when the cards are not enough to use (15 or less).
+3. Dealer hits when the 17 is soft.
+4. The player can split no more than 3 times.
+
+
+##Game Rules
+###Player Decisions
+1. **Hit**. Take another card from the dealer
+2. **Stand**. Take no more cards.
+3. **DoubleDown**. The player is allowed to increase the initial bet by up to 100% in exchange for committing to stand after receiving exactly one more card.
+4. **Split** (only available as the first decision of a hand). If the first two cards have the same value, the player can split them into two hands, by moving a second bet equal to the first into an area outside the betting box. The dealer separates the two cards and draws an additional card on each, placing one bet with each hand. The player then plays out the two separate hands in turn.
+	> After a split, the player can still double on the first round, but he can no longer surrender. The number of split limits is by default 3, but can be changed in the `bjconfig.dat` file.
+	
+	> Example of mutiple split,
+	
+	><img src="http://shawnhero.github.io/img/bj_split.png" height="400">
+	
+5. **Surrender** (only available as first decision of a hand). After the dealer has checked for blackjack, the user can choose to surrender. By doing so, the house takes half the player's bet and returns the other half to the player.
+
+###Dealer's Decisions
+1. **Hit**. If the dealer's cards add equal to or less than 16, he must choose to hit.
+2. **Stand**. If the dealer's cards add equal to or more than 17, he must choose to stand.
+
+###Beat the Dealer
+The player can beat the dealer in one of the following ways,
+- Get 21 points on the player's first two cards (called a blackjack), without a dealer blackjack;
+- Reach a final score higher than the dealer without exceeding 21; or
+let the dealer draw additional cards until his or her hand exceeds 21.
+
+##Load and Save the Game
+The game offers a choice to load game and save games.
