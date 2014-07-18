@@ -18,6 +18,8 @@ inline bool is_number(const std::string& s)
         s.end(), [](char c) { return !std::isdigit(c); }) == s.end();
 }
 
+// load the game configuration file
+// if file not found, use the default setting
 void Game::LoadConfig(){
 	ifstream myfile("bjconfig.dat");
 	if(!myfile.good())	return;
@@ -71,6 +73,11 @@ void Game::LoadConfig(){
 
 }
 
+
+// first try to read from configure file
+// if not found, then do some initialization
+// Hmm, maybe I'll add some encryption feature, 
+// otherwise it's just too easy for the players to cheat
 void Game::LoadGame(){
 	// first try to read from save.data
 	// Hmm, maybe I'll add some encryption feature, 
@@ -134,6 +141,8 @@ void Game::SetBet(int bet){
 	bet_ = bet;
 }
 
+
+// determine whether someone is running out of money
 bool Game::MoneyOut(){
 	if(player_.GetChips()<=0){
 		cout<<"You have no money left. Game Over."<<endl;
@@ -153,6 +162,10 @@ bool Game::MoneyOut(){
 	return false;
 }
 
+
+// return the person who wins
+// if someone get a blackjack, there is no need to coninue the game
+// kBoth stands for a push, while kNeither means the game should continue 
 WHO Game::StartGame(){
 
 	cout<<endl<<"Starting a new round.."<<endl;
@@ -424,8 +437,7 @@ bool Game::PlayerLoop(){
 }
 
 // deal with the player's choices
-// send cards
-// set the winner. 
+// send cards 
 void Game::DealerLoop(){
 	cout <<endl<<"Now the dealer's turn.."<<endl;
 	cout<<"-------------------------"<<endl;
@@ -438,7 +450,7 @@ void Game::DealerLoop(){
 		else
 			break;// dealer choose to stand
 	}
-	// reasons for exiting dealer's loop
+	// causes of exiting dealer's loop
 	// 1. the dealer busted himself
 	// 2. the dealer choose to stand
 	if(dealer_.IsBusted()){
@@ -447,25 +459,15 @@ void Game::DealerLoop(){
 		if(split_number_==0){
 			// if the player is not splitted, the player is definitely the winner
 			winner_ = kPlayer;
-			//dealer_.PrintCards(false);
 			
 		}
-		// if the player is splitted, need to further investigate on both hands
 		return;
 	}
-
-	// Here, either the dealer choose to stand
-	// or dealer busted himself but the user splitted
-	// note, if the player busted himself for one of the splitted cards, that hand is considered a lose regardless whether the dealer busted or not
-	// now compare the cards
-
-	/// changes are needed to support busted conditions
 	cout <<endl<<"Dealer choose to stand."<<endl;
 }
 
 // the main game loop
 // PlayerLoop and DealerLoop are called here
-// set the winner to either winner_ or splitted_winner
 void Game::GameLoop(){
 	// the split_number_ is dynamic
 	// every split will increment it by 1
@@ -558,6 +560,8 @@ void Game::SetWinner_WinningRate(Hand_Status & h_status){
 }
 
 
+// call the SetWinners, 
+// then close the money
 void Game::CloseGame(){
 	// Now we need to compare all the hands with the dealer
 	SetWinners();
@@ -625,6 +629,7 @@ void Game::CloseGame(){
 
 
 
+// print all the splitted cards
 void Game::PrintSplitted(){
 	cout<<endl<<"Splitted Hands Summary,"<<endl;
 	cout<<"-------------------------"<<endl;
@@ -637,6 +642,8 @@ void Game::PrintSplitted(){
 
 	
 }
+
+// Print how many chips for the player and dealer
 void Game::PrintChipStatus(){
 	cout<<endl<<"-------------------------"<<endl;
 	cout<<"Your chips, "<<player_.GetChips()<<endl;
@@ -644,6 +651,7 @@ void Game::PrintChipStatus(){
 	cout<<"-------------------------"<<endl;
 }
 
+// prompt whether to exit. if player chooses to exit, return true
 bool Game::PromptExit(){
 	// prompt exit
 	// also let the player set a new bet if he chooses to contunue

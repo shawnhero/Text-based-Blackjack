@@ -113,32 +113,6 @@ Card Player::SplitCard(){
 }
 
 
-// ///////////////////////////////////////////////////
-// // the overloaded methods for split
-
-// void Player::HitCard(Card newcard, bool isfirst){
-// 	auto & cards = isfirst?player_cards_:player_cards2_;
-// 	cards.push_back(newcard);
-// 	UpdateStatus(isfirst);
-// }
-
-// bool Player::IsBlackJack(bool isfirst){
-// 	auto & status = isfirst?status_:status2_;
-// 	return status.is_blackjack;
-// }
-
-// bool Player::IsBusted(bool isfirst){
-// 	auto & status = isfirst?status_:status2_;
-// 	return status.is_busted;
-// }
-
-// int Player::MaxSum(bool isfirst){
-// 	auto & status = isfirst?status_:status2_;
-// 	return status.max_sum;
-// }
-// ///////////////////////////////////////////////////
-
-
 void Player::CloseMoney(int profit){
 	chips_in_hand_ += profit;
 }

@@ -76,16 +76,6 @@ public:
 	// must be called when the player has exactly two identical cards
 	Card SplitCard();
 
-	// // below are some overloaded methods provided for the split
-
-	// // Get called if previously the user has chosen to split the card.
-	// // the second parameter determines which set of card to hit.
-	// void HitCard(Card newcard, bool isfirst);
-	// void UpdateStatus(bool isfirst);
-	// bool IsBlackJack(bool isfirst);
-	// bool IsBusted(bool isfirst);
-	// int MaxSum(bool isfirst);
-
 	virtual void PrintCards(bool firstround);
 	
 	void PrintCards(){PrintCards(false);}
@@ -93,6 +83,7 @@ public:
 
 class Dealer: public Player{
 private:
+	// whether to hit on soft 17
 	bool hit_soft_17_;
 public:
 	Dealer(){chips_in_hand_ = kDealerChips;hit_soft_17_=true;}
