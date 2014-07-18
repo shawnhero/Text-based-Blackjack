@@ -40,6 +40,9 @@ All the above are stored in a file named "bjconfig.dat".
 		ShuffleEveryRound	0
 		HitSoft17	1
 
+> A screenshot how the program restricts the number of splits,
+<img align="center"" src="http://shawnhero.github.io/img/bj_split_restrict.png" height=400>
+
 
 If not found, the default values will be used, which are respectively,
 
