@@ -38,7 +38,8 @@ void Game::LoadConfig(){
       string line1 = line.substr(0, pos);
       string line2 = line.substr(pos+1, line.size()-pos-1);
       if(is_number(line2)){
-      	mymap[line1] = stoi(line2);
+      	stringstream ss(line2);
+		ss >> mymap[line1] ;
       }
       else{
       	// bad file format, no need to set up
