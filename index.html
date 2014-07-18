@@ -32,7 +32,7 @@
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
         <h1>
-<a name="text-based-blackjack" class="anchor" href="#text-based-blackjack"><span class="octicon octicon-link"></span></a>text-based-BlackJack</h1>
+<a name="text-based-blackjack" class="anchor" href="#text-based-blackjack"><span class="octicon octicon-link"></span></a>Text-based BlackJack</h1>
 
 <p>This is a simple text-based blackjack written fully in C++. Most of the key features of Blackjack are fulfilled.</p>
 
@@ -64,7 +64,7 @@
 <a name="key-features" class="anchor" href="#key-features"><span class="octicon octicon-link"></span></a>Key Features</h1>
 
 <h2>
-<a name="game-mode-dealers-perspective" class="anchor" href="#game-mode-dealers-perspective"><span class="octicon octicon-link"></span></a>Game Mode (Dealer's Perspective)</h2>
+<a name="load-game-settings-dealers-perspective" class="anchor" href="#load-game-settings-dealers-perspective"><span class="octicon octicon-link"></span></a>Load Game Settings (Dealer's Perspective)</h2>
 
 <ol>
 <li>Choose how many decks are used in a game.</li>
@@ -72,7 +72,24 @@
 <li>
 <a href="http://www.smartgaming.com/html/articles/soft17.htm">Soft 17 Rule</a>. Choose whether the deal stands when he has a soft 17.</li>
 <li>Split limits. The maximum number that a player can split.</li>
-</ol><p>All the above are stored in a file named "game.config". If not found, the default values will be used, which are respectively,</p>
+</ol><p>All the above are stored in a file named "bjconfig.dat".</p>
+
+<blockquote>
+<p>A typical <code>bjconfig.dat</code> is as follows,</p>
+</blockquote>
+
+<pre><code>    DeckNum 2
+    SplitLimit  2
+    ShuffleEveryRound   0
+    HitSoft17   1
+</code></pre>
+
+<blockquote>
+<p>A screenshot how the program restricts the number of splits,
+<img align="center" src="http://shawnhero.github.io/img/bj_split_restrict.png" height="400"></p>
+</blockquote>
+
+<p>If not found, the default values will be used, which are respectively,</p>
 
 <ol>
 <li>Only 1 deck of cards is used.</li>
@@ -96,7 +113,7 @@
 <p><strong>Split</strong> (only available as the first decision of a hand). If the first two cards have the same value, the player can split them into two hands, by moving a second bet equal to the first into an area outside the betting box. The dealer separates the two cards and draws an additional card on each, placing one bet with each hand. The player then plays out the two separate hands in turn.</p>
 
 <blockquote>
-<p>After a split, the player can still double on the first round, but he can no longer surrender. The number of split limits is by default 3, but can be changed in the <code>game.config</code> file.</p>
+<p>After a split, the player can still double on the first round, but he can no longer surrender. The number of split limits is by default 3, but can be changed in the <code>bjconfig.dat</code> file.</p>
 
 <p>Example of mutiple split,</p>
 
