@@ -14,8 +14,9 @@ using namespace std;
 // determine whether a string is a valid number
 inline bool is_number(const std::string& s)
 {
-    return !s.empty() && std::find_if(s.begin(), 
-        s.end(), [](char c) { return !std::isdigit(c); }) == s.end();
+    auto it = s.begin();
+    while (it != s.end() && isdigit(*it)) ++it;
+    return !s.empty() && it == s.end();
 }
 
 // load the game configuration file
