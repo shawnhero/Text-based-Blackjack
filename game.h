@@ -10,23 +10,20 @@ class Game{
 private:
 	int bet_;	// the money the player bet on this hand
 	Cards mycards_;	// the current deck of cards
-	Dealer dealer_;
+	Dealer dealer_;	// the dealer
 
 	// below two are used for unsplitted player
 	Player player_;
 	WHO winner_;
-	// WHO split_winner_;
 
 	// indicate whether to shuffle every round
 	bool shuffle_every_round_;
 
-	// indicate whether the dealer will hit on soft 17
-	//bool hit_soft_17_;
-	//  hit_soft_17_(true), 
 
 	// the split limitation
 	// 1 stands for there can be only 1 times of split
 	int split_limit_;
+	// the number of splits that the player has carried out
 	int split_number_;
 
 	// the current hand of all the splitted ones
@@ -34,6 +31,7 @@ private:
 	int current_hand_;
 
 	 
+	 // this struct is to describe the status of each hand after split(s)
 	struct Hand_Status{
 		Player hand;
 		WHO winner;
@@ -70,13 +68,12 @@ private:
 	// Else return true
 	bool PlayerLoop();
 
-	// deal with the player's choices
+	// deal with the dealer's choices
 	// send cards
-	// set the winner. 
 	void DealerLoop();
 
 	// split the card
-	// the new set of cards will be hold be a virtual player: player_split
+	// the new set of cards will be hold by a virtual player
 	void Split(int index);
 
 	// print all the splitted cards
@@ -89,7 +86,7 @@ private:
 	// set all the winning rates
 	void SetWinners();
 
-	// in: a single hand
+	// in: a single hand_status
 	// set: the winner
 	// return: the winning rate
 	void SetWinner_WinningRate(Hand_Status & h_status);
@@ -98,9 +95,12 @@ public:
 	Game():bet_(1), winner_(kNeither), shuffle_every_round_(false), split_limit_(3), split_number_(0), current_hand_(0), double_flag_(false),surrender_flag_(false){}
 
 	// load the game configuration file
+	// if file not found, use the default setting
 	void LoadConfig();
+
 	// determine whether someone is running out of money
 	bool MoneyOut();
+
 	// first try to read from configure file
 	// if not found, then do some initialization
 	// Hmm, maybe I'll add some encryption feature, 
@@ -108,18 +108,22 @@ public:
 	void LoadGame();
 
 	// return the person who wins
+	// if someone get a blackjack, there is no need to coninue the game
 	// kBoth stands for a push, while kNeither means the game should continue 
 	WHO StartGame();
 
 	// The main game loop
-	// Include first the player's loop and then the dealer's loop
+	// Include first the player's loop and the dealer's loop
 	void GameLoop();
 
-	// print the result and change the money
+	// call the SetWinners, 
+	// then close the money
 	void CloseGame();
 
 	// save the current money to file (optional) and exit
 	// if exit, return true, else return false
 	void SaveGame();
+
+	// prompt whether to exit. if player chooses to exit, return true
 	bool PromptExit();
 };

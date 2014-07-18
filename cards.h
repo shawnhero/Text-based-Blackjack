@@ -34,16 +34,21 @@ class Cards{
 public:
 	// Initialize one deck of cards
 	Cards();
-	// Specify how many decks of cards should be used
 	
+	// Shuffle a card
 	void Shuffle();
+
+	// Send a card from the current deck(s) of cards
+	// Return the card sent
 	Card SendCard();
+
+	// Specify how many decks of cards should be used
 	void SetDeckNum(int num);
+	// debug use
 	void PrintAllFreshCards();
 private:
-	vector<Card > fresh_cards_;
-	vector<Card > used_cards_;
-	// TESTCARDS type_test_cards;
+	vector<Card > fresh_cards_;	// unused cards
+	vector<Card > used_cards_;	// used cards
 	
 	// This method is to be called in the Shuffle method. To ensure the shuffle is random.
 	struct Gen {
