@@ -17,6 +17,13 @@ private:
 	WHO winner_;
 	// WHO split_winner_;
 
+	// indicate whether to shuffle every round
+	bool shuffle_every_round_;
+
+	// indicate whether the dealer will hit on soft 17
+	//bool hit_soft_17_;
+	//  hit_soft_17_(true), 
+
 	// the split limitation
 	// 1 stands for there can be only 1 times of split
 	int split_limit_;
@@ -88,7 +95,7 @@ private:
 	void SetWinner_WinningRate(Hand_Status & h_status);
 
 public:
-	Game():bet_(1), winner_(kNeither), split_limit_(3), split_number_(0), current_hand_(0), double_flag_(false),surrender_flag_(false){}
+	Game():bet_(1), winner_(kNeither), shuffle_every_round_(false), split_limit_(3), split_number_(0), current_hand_(0), double_flag_(false),surrender_flag_(false){}
 
 	// load the game configuration file
 	void LoadConfig();

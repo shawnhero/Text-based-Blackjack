@@ -51,7 +51,7 @@ void Card::DisplayCard(){
 }
 
 Cards::Cards(){
-	type_test_cards = kNormal;
+	//type_test_cards = kNormal;
 	for(int i=0; i<52; i++){
 		Card newcard(i/4+1, i%4);
 		fresh_cards_.push_back(newcard);
@@ -60,7 +60,9 @@ Cards::Cards(){
 	Shuffle();
 }
 
-Cards::Cards(int num){
+void Cards::SetDeckNum(int num){
+	fresh_cards_.clear();
+	used_cards_.clear();
 	if(num<=0) num = 1;
 	for(int j=0; j<=num; j++){
 		for(int i=0; i<52; i++){
@@ -69,7 +71,6 @@ Cards::Cards(int num){
 		}
 
 	}
-	used_cards_.clear();
 	Shuffle();
 }
 
@@ -83,18 +84,19 @@ void Cards::PrintAllFreshCards(){
 
 
 void Cards::Shuffle(){
-	switch(type_test_cards){
-		case kSplitHell:
-			break;
-		default:
-			// first merge two parts into one, and clear the used cards
-			fresh_cards_.insert(fresh_cards_.end(), used_cards_.begin(), used_cards_.end());
-			used_cards_.clear();
-			// then do the shuffle
-			// if Gen() is not set, everytime the result will be the same
-			random_shuffle(fresh_cards_.begin(), fresh_cards_.end(), Gen());
-			break;
-	}
+	// switch(type_test_cards){
+	// 	case kSplitHell:
+	// 		break;
+	// 	default:
+
+	// first merge two parts into one, and clear the used cards
+	fresh_cards_.insert(fresh_cards_.end(), used_cards_.begin(), used_cards_.end());
+	used_cards_.clear();
+	// then do the shuffle
+	// if Gen() is not set, everytime the result will be the same
+	random_shuffle(fresh_cards_.begin(), fresh_cards_.end(), Gen());
+	break;
+	//}
 
 }
 

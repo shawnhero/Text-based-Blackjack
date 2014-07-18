@@ -8,17 +8,47 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <unordered_map>
 using namespace std;
 
 void Game::LoadConfig(){
-	ifstream file("bjconfig.dat");
-	if(!file.good())	return;
+	ifstream myfile("bjconfig.dat");
+	if(!myfile.good())	return;
 	
+	// file is good, read config to maps
+	unordered_map<string, int> mymap;
+	int deck_num;
+	int split_limit;
+	bool shuffle_every_round;
+	bool hit_soft_17;
+
+	string line;
+	while ( getline (mymyfile,line) )
+    {
+      
+      unsigned int pos=0;
+      for(auto i:line){
+      	if(i==' ' || i=='\t') break;
+      	pos++;
+      }
+      string line1 = line.substr();
+      string line2 = line.substr();
+    }
+    myfile.close();
+	file >> deck_num >>
+
 	// do settings here
 	// set split limit
 	// number of decks
 	// shuffle rules
 	// whether to hit soft 17
+
+
+	split_limit_ = split_limit;
+	shuffle_every_round_ = shuffle_every_round;
+	mycards_.SetDeckNum(deck_num);
+	dealer_.SetHitSoft(hit_soft_17);
+
 
 
 }
@@ -109,8 +139,11 @@ WHO Game::StartGame(){
 
 	cout<<endl<<"Starting a new round.."<<endl;
 	cout<<"-------------------------"<<endl;
-	// // shuffle for every hand
-	//mycards_.Shuffle();
+	// shuffle for every game
+	if(shuffle_every_round_){
+		cout<<"Shuffling.."<<endl;
+		mycards_.Shuffle();
+	}
 	dealer_.HitCard(mycards_.SendCard());
 	dealer_.HitCard(mycards_.SendCard());
 	player_.HitCard(mycards_.SendCard());

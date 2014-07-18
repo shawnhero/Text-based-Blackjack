@@ -143,13 +143,17 @@ void Player::CloseMoney(int profit){
 	chips_in_hand_ += profit;
 }
 
+void Dealer::SetHitSoft(bool flag){
+	hit_soft_17_ = flag;
+}
 ACTION Dealer::WhatToDo(){
 	// to deal with soft 17: choose to hit
-	if(status_.max_sum>=17 && !status_.is_sum_soft){
-		return kStand;
+	bool tohit = status_.max_sum<=16 || (status_.max_sum==17 && status_.is_sum_soft && hit_soft_17_);
+	if(tohit){
+		return kHit;
 	}
 	else{
-		return kHit;
+		return kStand;
 	}
 }
 

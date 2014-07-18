@@ -92,8 +92,11 @@ public:
 };
 
 class Dealer: public Player{
+private:
+	bool hit_soft_17_;
 public:
-	Dealer(){chips_in_hand_ = kDealerChips;}
+	Dealer(){chips_in_hand_ = kDealerChips;hit_soft_17_=true;}
+	void SetHitSoft(bool flag);
 
 	// According the current status, what's the right decision to make?
 	// This describes the dealer's strategy. 
