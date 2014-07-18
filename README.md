@@ -13,7 +13,7 @@ In order to do this,
 2. Log all the game information in a single `.csv` file.
 3. Use R or Python to analyze the result of the file.
 
-Factors to change can be classified into to aspectes,
+Factors to change can be classified into 2 aspectes,
 
 1. The game settings, which can already be modified by the `bjconfig.dat` file.
 2. Player's strategy. This need to be hard coded in the `Action SuperGambler::WhatToDo()` method. The input parameters should be 
