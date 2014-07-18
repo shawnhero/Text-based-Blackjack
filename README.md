@@ -24,13 +24,24 @@ Screenshot,
 - A seperate [branch](https://github.com/shawnhero/Text-based-Blackjack/tree/auto_analysis) is created in an attempt to analyze how the factors affect the winning probabilities, along with what is right thing to do for the players. I'm also considering to get the max winning probability (rate) a player can reach, given that there's only one deck of cards and the player is capabale of memorizing all the used cards.
 
 #Key Features
-##Game Mode (Dealer's Perspective)
+##Load Game Settings (Dealer's Perspective)
 1. Choose how many decks are used in a game.
 2. Shuffle Rules. Either a shuffle is triggered every hand or it's not triggered until there're 15 or less cards left.
 3. [Soft 17 Rule](http://www.smartgaming.com/html/articles/soft17.htm). Choose whether the deal stands when he has a soft 17.
 4. Split limits. The maximum number that a player can split.
 
-All the above are stored in a file named "game.config". If not found, the default values will be used, which are respectively,
+All the above are stored in a file named "bjconfig.dat".
+
+> A typical `bjconfig.dat` is as follows,
+
+
+		DeckNum	2
+		SplitLimit	2
+		ShuffleEveryRound	0
+		HitSoft17	1
+
+
+If not found, the default values will be used, which are respectively,
 
 1. Only 1 deck of cards is used.
 2. A shuffle is triggered only when the cards are not enough to use (15 or less).

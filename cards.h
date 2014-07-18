@@ -37,6 +37,7 @@ public:
 	// Specify how many decks of cards should be used
 	
 	void Shuffle();
+	Card SendCard();
 	void SetDeckNum(int num);
 	void PrintAllFreshCards();
 private:

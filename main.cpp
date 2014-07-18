@@ -7,6 +7,7 @@ using namespace std;
 
 int main(){
 	Game mygame;
+	mygame.LoadConfig();
 	// try to load last saved game
 	mygame.LoadGame();
 	while(!mygame.MoneyOut()){

@@ -11,45 +11,63 @@
 #include <unordered_map>
 using namespace std;
 
+// determine whether a string is a valid number
+inline bool is_number(const std::string& s)
+{
+    return !s.empty() && std::find_if(s.begin(), 
+        s.end(), [](char c) { return !std::isdigit(c); }) == s.end();
+}
+
 void Game::LoadConfig(){
 	ifstream myfile("bjconfig.dat");
 	if(!myfile.good())	return;
 	
 	// file is good, read config to maps
 	unordered_map<string, int> mymap;
-	int deck_num;
-	int split_limit;
-	bool shuffle_every_round;
-	bool hit_soft_17;
-
 	string line;
-	while ( getline (mymyfile,line) )
+	while ( getline (myfile,line) )
     {
-      
       unsigned int pos=0;
       for(auto i:line){
       	if(i==' ' || i=='\t') break;
       	pos++;
       }
-      string line1 = line.substr();
-      string line2 = line.substr();
+      string line1 = line.substr(0, pos);
+      string line2 = line.substr(pos+1, line.size()-pos-1);
+      if(is_number(line2)){
+      	mymap[line1] = stoi(line2);
+      }
+      else{
+      	// bad file format, no need to set up
+      	return;
+      }
     }
     myfile.close();
-	file >> deck_num >>
 
-	// do settings here
-	// set split limit
-	// number of decks
-	// shuffle rules
-	// whether to hit soft 17
+    cout <<endl<< "Settings Loaded,"<<endl;
+    cout<<"-------------------------"<<endl;
+    // set the deck numer
+	if(mymap["DeckNum"]>=1){
+		mycards_.SetDeckNum(mymap["DeckNum"]);
+		cout << "Number of Decks set to, "<< mymap["DeckNum"]<<endl;
+	}
 
+    // set the split limit
+    if(mymap["SplitLimit"] >=0){
+    	split_limit_ = mymap["SplitLimit"];
+    	cout <<"Split Limit set to, " << split_limit_<<endl;
+    }
 
-	split_limit_ = split_limit;
-	shuffle_every_round_ = shuffle_every_round;
-	mycards_.SetDeckNum(deck_num);
-	dealer_.SetHitSoft(hit_soft_17);
-
-
+    // set shuffle
+	shuffle_every_round_ = (bool) mymap["ShuffleEveryRound"];
+	cout << "Shuffle Every Round set to, " << shuffle_every_round_ <<endl;
+	
+	// set hit rule
+	if(mymap["HitSoft17"]==0 || mymap["HitSoft17"] ==1){
+		dealer_.SetHitSoft((bool)mymap["HitSoft17"]);
+		cout << "Hit Soft 17 set to, "<< (bool)mymap["HitSoft17"] <<endl;
+	}
+	cout <<endl;
 
 }
 
@@ -228,15 +246,27 @@ bool Game::PlayerLoop(){
 	
 
 	if(split_number_){
-		cout<<endl<<"-------------------------"<<endl;
-		cout<<"Now decide on your hand "<<current_hand_  <<","<< endl;
-		player.PrintCards(false);
+		// when splitted, it is possible that this loop is entered 
+		// even when the player got a blackjack
+		// need to check that
+		if(player.IsBlackJack()){
+			cout <<"You got a BlackJack!"<<endl;
+			// go on the dealer's loop
+			return true;
+		}
+		else{
+			cout<<endl<<"-------------------------"<<endl;
+			cout<<"Now decide on your hand "<<current_hand_  <<","<< endl;
+			player.PrintCards(false);
+		}
+		
 	}
-	
+
 	// Player's loop
 	// add feature for double, split and surrender
 	bool player_first_round = true;
 	bool end_of_player_loop = false;
+	
 	while(!end_of_player_loop){	
 		// when a player busts himself, it will return kDealer directly
 		// when a player gets a blackjack, it will return kPlayer directly
@@ -482,7 +512,17 @@ void Game::SetWinner_WinningRate(Hand_Status & h_status){
 	auto & rate = h_status.win_rate;
 
 	int diff = 0;
-	if(hand.MaxSum()>21){
+	if(dealer_.IsBlackJack() && !hand.IsBlackJack()){
+		// this is for the boundary condition
+		// that dealer got blackjack, the player got 21
+		winner = kDealer;
+		rate = -3;
+	}
+	else if(hand.IsBlackJack() && !dealer_.IsBlackJack()){
+		winner = kPlayer;
+		rate = 3;
+	}
+	else if(hand.MaxSum()>21){
 		// player is busted. 
 		// even the dealer is also busted, cause player busted first, 
 		// the winner is still the dealer
@@ -493,16 +533,6 @@ void Game::SetWinner_WinningRate(Hand_Status & h_status){
 		// dealer is busted.
 		winner = kPlayer;
 		rate = 2;
-	}
-	else if(dealer_.IsBlackJack() && !hand.IsBlackJack()){
-		// this is for the boundary condition
-		// that dealer got blackjack, the player got 21
-		winner = kDealer;
-		rate = -3;
-	}
-	else if(hand.IsBlackJack() && !dealer_.IsBlackJack()){
-		winner = kPlayer;
-		rate = 3;
 	}
 	else{
 		// for now, no bust, no blackjack

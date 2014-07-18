@@ -95,7 +95,7 @@ void Cards::Shuffle(){
 	// then do the shuffle
 	// if Gen() is not set, everytime the result will be the same
 	random_shuffle(fresh_cards_.begin(), fresh_cards_.end(), Gen());
-	break;
+	//break;
 	//}
 
 }
